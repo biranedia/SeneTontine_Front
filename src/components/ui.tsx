@@ -271,7 +271,7 @@ const s = StyleSheet.create({
 
   fieldLabel: { fontSize: 13, fontWeight: '600', color: colors.ink, marginBottom: 8 },
   fieldWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: radius.md, paddingHorizontal: 14 },
-  fieldInput: { flex: 1, paddingVertical: 14, fontSize: 15, color: colors.ink },
+  fieldInput: { flex: 1, paddingVertical: 14, fontSize: 15, color: colors.ink, ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : null) },
   fieldSuffix: { fontSize: 13, color: colors.muted, fontWeight: '600' },
   fieldHint: { fontSize: 12, color: colors.subtle, marginTop: 6 },
 
