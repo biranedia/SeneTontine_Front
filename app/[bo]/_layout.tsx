@@ -26,10 +26,12 @@ export default function BackofficeLayout() {
 
   useEffect(() => {
     const key = String(bo ?? '');
-    if (user?.role !== 'ADMIN' || !/^[A-Za-z0-9_-]{4,64}$/.test(key)) { setState('nope'); return; }
+    // On ne se fie pas au rôle gardé en mémoire sur le téléphone (il peut dater d'avant la
+    // promotion en admin) : c'est le serveur qui tranche.
+    if (!user || !/^[A-Za-z0-9_-]{4,64}$/.test(key)) { setState('nope'); return; }
     setBackofficeKey(key);
     adminApi.overview().then(() => setState('ok')).catch(() => { setBackofficeKey(''); setState('nope'); });
-  }, [bo, user?.role]);
+  }, [bo, user?.phone]);
 
   if (state === 'checking') return <Loading />;
   if (state === 'nope') {
