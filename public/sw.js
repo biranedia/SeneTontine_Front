@@ -1,6 +1,6 @@
 // Service worker SèneTontine : rend l'app installable et rapide à rouvrir.
 // Les données (API) ne sont JAMAIS mises en cache : elles restent toujours à jour et privées.
-const CACHE = 'senetontine-v1';
+const CACHE = 'senetontine-v2';
 const SHELL = ['/', '/accueil', '/manifest.json', '/icons/icon-192.png'];
 
 self.addEventListener('install', (event) => {
