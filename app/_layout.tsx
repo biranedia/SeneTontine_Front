@@ -4,6 +4,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { Stack, useRouter, useSegments, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { PaperProvider } from 'react-native-paper';
+import { LanguageProvider } from '@/src/i18n';
 import { AuthProvider, useAuth } from '@/src/context/AuthContext';
 import { Loading } from '@/src/components/ui';
 import { colors } from '@/src/theme';
@@ -40,6 +41,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 export default function RootLayout() {
   return (
     <PaperProvider>
+      <LanguageProvider>
       <AuthProvider>
         <StatusBar style="dark" />
         <AuthGate>
@@ -51,6 +53,7 @@ export default function RootLayout() {
           </View>
         </AuthGate>
       </AuthProvider>
+      </LanguageProvider>
     </PaperProvider>
   );
 }

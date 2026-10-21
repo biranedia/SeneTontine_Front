@@ -8,6 +8,8 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { colors } from '@/src/theme';
 import { Button, Screen } from '@/src/components/ui';
 import { InstallApp } from '@/src/components/InstallApp';
+import { useT } from '@/src/i18n';
+import { LangSwitch } from '@/src/components/LangSwitch';
 import { SUPPORT_WHATSAPP, whatsappUrl } from '@/src/config';
 
 type Icon = React.ComponentProps<typeof Ionicons>['name'];
@@ -28,6 +30,7 @@ const PERKS: { icon: Icon; text: string }[] = [
 
 export default function Landing() {
   const router = useRouter();
+  const { t } = useT();
 
   return (
     <Screen edges={['top', 'bottom']}>
@@ -37,68 +40,69 @@ export default function Landing() {
           <Image source={require('../assets/logo.png')} style={s.logoSm} />
           <Text style={s.brandName}>SèneTontine</Text>
         </View>
-        <Text style={s.topLink} onPress={() => router.push('/login' as any)}>Se connecter</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <LangSwitch />
+          <Text style={s.topLink} onPress={() => router.push('/login' as any)}>{t('Se connecter')}</Text>
+        </View>
       </View>
 
       {/* Héros */}
       <Animated.View entering={FadeInDown.duration(400)} style={s.hero}>
-        <Text style={s.kicker}>Tontine en ligne · Sénégal</Text>
-        <Text style={s.h1}>Vos tontines,{'\n'}simples et transparentes.</Text>
-        <Text style={s.lead}>
-          Organise ta tontine entre proches sans cahier ni disputes : cotisations, tours de rôle et rappels, au même endroit.
-        </Text>
-        <Button label="Créer ma tontine gratuitement" onPress={() => router.push('/register')} />
-        <Button label="J’ai déjà un compte" variant="secondary" onPress={() => router.push('/login' as any)} style={{ marginTop: 10 }} />
+        <Text style={s.kicker}>{t('Tontine en ligne · Sénégal')}</Text>
+        <Text style={s.h1}>{t('Vos tontines,\nsimples et transparentes.')}</Text>
+        <Text style={s.lead}>{t('Organise ta tontine entre proches sans cahier ni disputes : cotisations, tours de rôle et rappels, au même endroit.')}</Text>
+        <Button label={t('Créer ma tontine gratuitement')} onPress={() => router.push('/register')} />
+        <Button label={t('J’ai déjà un compte')} variant="secondary" onPress={() => router.push('/login' as any)} style={{ marginTop: 10 }} />
         <InstallApp />
       </Animated.View>
 
       {/* Comment ça marche */}
-      <Text style={s.h2}>Comment ça marche</Text>
+      <Text style={s.h2}>{t('Comment ça marche')}</Text>
       {STEPS.map((st, i) => (
-        <Animated.View key={st.title} entering={FadeInDown.delay(80 * i).duration(350)} style={s.step}>
+        <Animated.View key={t(st.title)} entering={FadeInDown.delay(80 * i).duration(350)} style={s.step}>
           <View style={s.stepNum}><Text style={s.stepNumText}>{i + 1}</Text></View>
           <View style={{ flex: 1 }}>
             <View style={s.stepHead}>
               <Ionicons name={st.icon} size={18} color={colors.goldDark} />
-              <Text style={s.stepTitle}>{st.title}</Text>
+              <Text style={s.stepTitle}>{t(st.title)}</Text>
             </View>
-            <Text style={s.stepText}>{st.text}</Text>
+            <Text style={s.stepText}>{t(st.text)}</Text>
           </View>
         </Animated.View>
       ))}
 
       {/* Pourquoi */}
-      <Text style={s.h2}>Pourquoi SèneTontine</Text>
+      <Text style={s.h2}>{t('Pourquoi SèneTontine')}</Text>
       <View style={s.card}>
         {PERKS.map((p) => (
           <View key={p.text} style={s.perk}>
             <Ionicons name={p.icon} size={20} color={colors.success} />
-            <Text style={s.perkText}>{p.text}</Text>
+            <Text style={s.perkText}>{t(p.text)}</Text>
           </View>
         ))}
       </View>
 
       {/* Prix */}
-      <Text style={s.h2}>Tarif</Text>
+      <Text style={s.h2}>{t('Tarif')}</Text>
       <View style={[s.card, s.priceCard]}>
-        <Text style={s.priceBig}>1<Text style={s.priceSup}>re</Text> tontine offerte</Text>
-        <Text style={s.priceText}>Ensuite 2 500 FCFA par nouvelle tontine ou par renouvellement, payés une seule fois par le créateur. Les membres ne paient rien à SèneTontine.</Text>
-        <Text style={s.priceText}>L’épargne personnelle est toujours gratuite.</Text>
+        <Text style={s.priceBig}>{t('1re tontine offerte')}</Text>
+        <Text style={s.priceText}>{t('Ensuite 2 500 FCFA par nouvelle tontine ou par renouvellement, payés une seule fois par le créateur. Les membres ne paient rien à SèneTontine.')}</Text>
+        <Text style={s.priceText}>{t('L’épargne personnelle est toujours gratuite.')}</Text>
       </View>
 
       {/* CTA final */}
       <View style={s.final}>
-        <Text style={s.finalTitle}>Prêt à lancer ta tontine ?</Text>
-        <Button label="Créer mon compte" onPress={() => router.push('/register')} style={{ alignSelf: 'stretch' }} />
+        <Text style={s.finalTitle}>{t('Prêt à lancer ta tontine ?')}</Text>
+        <Button label={t('Créer mon compte')} onPress={() => router.push('/register')} style={{ alignSelf: 'stretch' }} />
         <Text style={s.help} onPress={() => Linking.openURL(whatsappUrl('Bonjour SèneTontine, j’ai une question.', SUPPORT_WHATSAPP))}>
-          Une question ? Écris-nous sur WhatsApp
+          {t('Une question ? Écris-nous sur WhatsApp')}
         </Text>
       </View>
 
       <View style={s.footer}>
-        <Text style={s.footerLink} onPress={() => router.push('/legal/terms')}>Conditions d’utilisation</Text>
+        <Text style={s.footerLink} onPress={() => router.push('/legal/terms')}>{t('Conditions d’utilisation')}</Text>
         <Text style={s.footerDot}>·</Text>
-        <Text style={s.footerLink} onPress={() => router.push('/legal/privacy')}>Confidentialité</Text>
+        <Text style={s.footerLink} onPress={() => router.push('/legal/privacy')}>{t('Confidentialité')}</Text>
       </View>
       <Text style={s.copy}>© {new Date().getFullYear()} SèneTontine{Platform.OS === 'web' ? ' · senetontine.com' : ''}</Text>
     </Screen>

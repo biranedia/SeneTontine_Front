@@ -3,10 +3,12 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '@/src/theme';
+import { useT } from '@/src/i18n';
 
 export default function TabsLayout() {
   // Marge réservée à la barre de navigation Android (boutons ou gestes) en mode bord à bord.
   const insets = useSafeAreaInsets();
+  const { t } = useT();
   return (
     <Tabs
       screenOptions={{
@@ -18,15 +20,15 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen name="accueil" options={{
-        title: 'Accueil',
+        title: t('Accueil'),
         tabBarIcon: ({ color, focused }) => <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={color} />,
       }} />
       <Tabs.Screen name="tontines" options={{
-        title: 'Tontines',
+        title: t('Tontines'),
         tabBarIcon: ({ color, focused }) => <Ionicons name={focused ? 'people' : 'people-outline'} size={22} color={color} />,
       }} />
       <Tabs.Screen name="profil" options={{
-        title: 'Profil',
+        title: t('Profil'),
         tabBarIcon: ({ color, focused }) => <Ionicons name={focused ? 'person-circle' : 'person-circle-outline'} size={24} color={color} />,
       }} />
     </Tabs>

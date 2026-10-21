@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useT } from '@/src/i18n';
 import { useAuth } from '@/src/context/AuthContext';
 import { ApiError } from '@/src/api/client';
 import { colors } from '@/src/theme';
@@ -10,6 +11,7 @@ import { Button, Field, PageHeader, Screen, tap } from '@/src/components/ui';
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const { t } = useT();
   const { register } = useAuth();
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
@@ -32,7 +34,7 @@ export default function RegisterScreen() {
     try {
       await register(fullName.trim(), phone.trim(), null, password, true);
     } catch (e) {
-      Alert.alert('Inscription impossible', e instanceof ApiError ? e.message : 'Réessaie plus tard.');
+      Alert.alert(t('Inscription impossible'), e instanceof ApiError ? e.message : t('Réessaie plus tard.'));
     } finally {
       busy.current = false;
       setLoading(false);
@@ -41,24 +43,24 @@ export default function RegisterScreen() {
 
   return (
     <Screen edges={['top', 'bottom']}>
-      <PageHeader back title="Créer un compte" subtitle="Ça prend moins d’une minute" />
-      <Field label="Nom complet" icon="person-outline" placeholder="Awa Diop" value={fullName} onChangeText={setFullName} autoComplete="name" />
-      <Field label="Numéro de téléphone" icon="call-outline" placeholder="77 123 45 67" keyboardType="phone-pad" value={phone} onChangeText={setPhone}
-        hint="C’est ton identifiant de connexion et le numéro que tes proches utiliseront pour t’ajouter." />
-      <Field label="Mot de passe" icon="lock-closed-outline" placeholder="8 caractères minimum" secureTextEntry value={password} onChangeText={setPassword} />
-      <Field label="Confirmer le mot de passe" icon="lock-closed-outline" secureTextEntry value={confirm} onChangeText={setConfirm} />
+      <PageHeader back title={t('Créer un compte')} subtitle={t('Ça prend moins d’une minute')} />
+      <Field label={t('Nom complet')} icon="person-outline" placeholder="Awa Diop" value={fullName} onChangeText={setFullName} autoComplete="name" />
+      <Field label={t('Numéro de téléphone')} icon="call-outline" placeholder="77 123 45 67" keyboardType="phone-pad" value={phone} onChangeText={setPhone}
+        hint={t('C’est ton identifiant de connexion et le numéro que tes proches utiliseront pour t’ajouter.')} />
+      <Field label={t('Mot de passe')} icon="lock-closed-outline" placeholder={t('8 caractères minimum')} secureTextEntry value={password} onChangeText={setPassword} />
+      <Field label={t('Confirmer le mot de passe')} icon="lock-closed-outline" secureTextEntry value={confirm} onChangeText={setConfirm} />
 
       <Pressable onPress={() => { tap(); setAccepted((v) => !v); }} style={s.terms}>
         <Ionicons name={accepted ? 'checkbox' : 'square-outline'} size={22} color={accepted ? colors.ink : colors.subtle} />
         <Text style={s.termsText}>
-          J’accepte les{' '}
-          <Text style={s.link} onPress={() => router.push('/legal/terms')}>conditions d’utilisation</Text>
-          {' '}et la{' '}
-          <Text style={s.link} onPress={() => router.push('/legal/privacy')}>politique de confidentialité</Text>.
+          {t('J’accepte les')}{' '}
+          <Text style={s.link} onPress={() => router.push('/legal/terms')}>{t('conditions d’utilisation')}</Text>
+          {' '}{t('et la')}{' '}
+          <Text style={s.link} onPress={() => router.push('/legal/privacy')}>{t('politique de confidentialité')}</Text>.
         </Text>
       </Pressable>
 
-      <Button label="Créer mon compte" onPress={submit} loading={loading} />
+      <Button label={t('Créer mon compte')} onPress={submit} loading={loading} />
     </Screen>
   );
 }

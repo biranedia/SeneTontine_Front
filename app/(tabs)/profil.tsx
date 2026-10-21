@@ -1,4 +1,6 @@
 // app/(tabs)/profil.tsx — Profil, réglages, administration, suppression de compte.
+import { useT } from '@/src/i18n';
+import { LangSwitch } from '@/src/components/LangSwitch';
 import { SUPPORT_WHATSAPP, whatsappUrl } from '@/src/config';
 import { shrinkToBase64 } from '@/src/lib/shrinkImage';
 import { InstallApp } from '@/src/components/InstallApp';
@@ -17,6 +19,7 @@ import { Avatar, Button, Card, Field, ListRow, Screen, SectionTitle, tap } from 
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, logout, logoutOtherDevices, setFullName } = useAuth();
+  const { t } = useT();
   const [profile, setProfile] = useState<usersApi.ProfileInfo | null>(null);
   const [stats, setStats] = useState<statsApi.UserStatsInfo | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -114,9 +117,15 @@ export default function ProfileScreen() {
       </Card>
 
       <InstallApp compact />
-      <SectionTitle title="Aide" />
+      <SectionTitle title={t('Langue')} />
+      <Card style={{ padding: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 15, color: colors.ink, fontWeight: '600' }}>Français / Wolof</Text>
+        <LangSwitch />
+      </Card>
+
+      <SectionTitle title={t('Aide')} />
       <Card style={{ paddingVertical: 2 }}>
-        <ListRow icon="logo-whatsapp" label="Nous contacter sur WhatsApp" last
+        <ListRow icon="logo-whatsapp" label={t('Nous contacter sur WhatsApp')} last
           onPress={() => Linking.openURL(whatsappUrl(`Bonjour SèneTontine, je suis ${name} (${profile?.phone ?? user?.phone ?? ''}).`, SUPPORT_WHATSAPP))} />
       </Card>
 

@@ -2,6 +2,7 @@
 import { InstallApp } from '@/src/components/InstallApp';
 import React, { useRef, useState } from 'react';
 import { Alert, Image, Linking, StyleSheet, Text, View } from 'react-native';
+import { useT } from '@/src/i18n';
 import { SUPPORT_WHATSAPP, whatsappUrl } from '@/src/config';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/src/context/AuthContext';
@@ -11,6 +12,7 @@ import { Button, Field, Screen } from '@/src/components/ui';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { t } = useT();
   const { login } = useAuth();
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -19,13 +21,13 @@ export default function LoginScreen() {
 
   const submit = async () => {
     if (busy.current) return;
-    if (!phone.trim() || !password) return Alert.alert('Champs manquants', 'Entre ton numéro et ton mot de passe.');
+    if (!phone.trim() || !password) return Alert.alert(t('Champs manquants'), 'Entre ton numéro et ton mot de passe.');
     busy.current = true;
     setLoading(true);
     try {
       await login(phone.trim(), password);
     } catch (e) {
-      Alert.alert('Connexion impossible', e instanceof ApiError ? e.message : 'Réessaie plus tard.');
+      Alert.alert(t('Connexion impossible'), e instanceof ApiError ? e.message : t('Réessaie plus tard.'));
     } finally {
       busy.current = false;
       setLoading(false);
@@ -37,26 +39,26 @@ export default function LoginScreen() {
       <View style={s.brand}>
         <Image source={require('../assets/logo.png')} style={s.logo} />
         <Text style={s.title}>SèneTontine</Text>
-        <Text style={s.tagline}>Vos tontines, simples et transparentes.</Text>
+        <Text style={s.tagline}>{t('Vos tontines, simples et transparentes.')}</Text>
       </View>
 
-      <Text style={s.h}>Connexion</Text>
-      <Field label="Numéro de téléphone" icon="call-outline" placeholder="77 123 45 67" keyboardType="phone-pad"
+      <Text style={s.h}>{t('Connexion')}</Text>
+      <Field label={t('Numéro de téléphone')} icon="call-outline" placeholder="77 123 45 67" keyboardType="phone-pad"
         value={phone} onChangeText={setPhone} autoComplete="tel" />
-      <Field label="Mot de passe" icon="lock-closed-outline" placeholder="••••••••" secureTextEntry
+      <Field label={t('Mot de passe')} icon="lock-closed-outline" placeholder="••••••••" secureTextEntry
         value={password} onChangeText={setPassword} onSubmitEditing={submit} />
 
       <Text style={s.forgot} onPress={() => Linking.openURL(whatsappUrl(
         `Bonjour SèneTontine, j'ai oublié mon mot de passe. Mon numéro de compte : ${phone.trim() || '…'}`, SUPPORT_WHATSAPP))}>
-        Mot de passe oublié ?
+        {t('Mot de passe oublié ?')}
       </Text>
 
-      <Button label="Se connecter" onPress={submit} loading={loading} />
+      <Button label={t('Se connecter')} onPress={submit} loading={loading} />
       <View style={s.footer}>
-        <Text style={s.footerText}>Pas encore de compte ?</Text>
-        <Button label="Créer un compte" variant="secondary" onPress={() => router.push('/register')} style={{ marginTop: 10 }} />
+        <Text style={s.footerText}>{t('Pas encore de compte ?')}</Text>
+        <Button label={t('Créer un compte')} variant="secondary" onPress={() => router.push('/register')} style={{ marginTop: 10 }} />
         <InstallApp />
-        <Text style={[s.forgot, { alignSelf: 'center', marginTop: 20 }]} onPress={() => router.replace('/')}>Découvrir SèneTontine</Text>
+        <Text style={[s.forgot, { alignSelf: 'center', marginTop: 20 }]} onPress={() => router.replace('/')}>{t('Découvrir SèneTontine')}</Text>
       </View>
     </Screen>
   );

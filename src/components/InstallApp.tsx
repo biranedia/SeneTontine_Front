@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Platform, View, Text, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '@/src/theme';
+import { useT } from '@/src/i18n';
 
 type W = Window & { __installPrompt?: any };
 
@@ -13,6 +14,7 @@ function isStandalone() {
 }
 
 export function InstallApp({ compact }: { compact?: boolean }) {
+  const { t } = useT();
   const [canPrompt, setCanPrompt] = useState(false);
   const [installed, setInstalled] = useState(true);
   const [help, setHelp] = useState(false);
@@ -50,8 +52,8 @@ export function InstallApp({ compact }: { compact?: boolean }) {
       <Pressable onPress={install} style={({ pressed }) => [s.row, pressed && { opacity: 0.7 }]}>
         <View style={s.icon}><Ionicons name="download-outline" size={20} color={colors.goldDark} /></View>
         <View style={{ flex: 1 }}>
-          <Text style={s.title}>Installer l’application</Text>
-          <Text style={s.sub}>Sur ton téléphone, comme une vraie appli</Text>
+          <Text style={s.title}>{t('Installer l’application')}</Text>
+          <Text style={s.sub}>{t('Sur ton téléphone, comme une vraie appli')}</Text>
         </View>
         <Ionicons name={canPrompt ? 'chevron-forward' : help ? 'chevron-up' : 'chevron-down'} size={18} color={colors.muted} />
       </Pressable>
