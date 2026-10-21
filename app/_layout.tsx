@@ -46,7 +46,7 @@ function Frame({ children }: { children: React.ReactNode }) {
   const wide = ADMIN_PAGES.test(pathname || '');
   return (
     <View style={s.desktopBg}>
-      <View style={[s.desktopFrame, wide && { maxWidth: undefined }]}>{children}</View>
+      <View style={[s.desktopFrame, wide && { maxWidth: '100%' as any }]}>{children}</View>
     </View>
   );
 }
