@@ -51,6 +51,16 @@ export const WO: Record<string, string> = {
   'Conditions d’utilisation': 'Sarti jëfandikoo',
   'Confidentialité': 'Sutura',
 
+  'Qui est derrière SèneTontine': 'Kan moo def SèneTontine',
+  'Fondateur et développeur': 'Ki ko sos te tabax ko',
+  'J’ai créé SèneTontine parce que la tontine est au cœur de nos familles et de nos quartiers, mais qu’elle se gère encore sur un cahier ou dans un groupe WhatsApp, avec des oublis et des malentendus. L’objectif : une tontine claire pour tout le monde, sans jamais toucher à votre argent.':
+    'Sos naa SèneTontine ndax natt mi ngi ci biir sunu njaboot ak sunu gox, waaye ñu ngi koy toppatoo ci kayit walla ci benn grup WhatsApp, ak fàtte ak xuloo. Li ma bëgg : natt bu leer ci ñépp, te duma laal sa xaalis mukk.',
+  'Une question, une idée ou un souci ? Je réponds personnellement.': 'Am nga laaj, xalaat walla jafe-jafe ? Man ci sama bopp maay tontu.',
+
+  'En savoir plus': 'Xam ci lu ëpp',
+  'Mentions légales': 'Xibaari yoon',
+  'À propos': 'Ci sunu mbir',
+
   // Connexion / inscription
   'Vos tontines, simples et transparentes.': 'Sa natt yi, yomb te leer.',
   'Connexion': 'Duggu',

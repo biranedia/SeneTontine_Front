@@ -4,4 +4,6 @@
   <url><loc>https://senetontine.com/register</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://senetontine.com/legal/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
   <url><loc>https://senetontine.com/legal/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://senetontine.com/legal/about</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://senetontine.com/legal/mentions</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
 </urlset>

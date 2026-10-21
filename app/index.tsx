@@ -10,7 +10,7 @@ import { Button, Screen } from '@/src/components/ui';
 import { InstallApp } from '@/src/components/InstallApp';
 import { useT } from '@/src/i18n';
 import { LangSwitch } from '@/src/components/LangSwitch';
-import { SUPPORT_WHATSAPP, whatsappUrl } from '@/src/config';
+import { SUPPORT_DISPLAY, SUPPORT_EMAIL, SUPPORT_WHATSAPP, whatsappUrl } from '@/src/config';
 
 type Icon = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -90,6 +90,25 @@ export default function Landing() {
         <Text style={s.priceText}>{t('L’épargne personnelle est toujours gratuite.')}</Text>
       </View>
 
+      {/* Qui sommes-nous */}
+      <Text style={s.h2}>{t('Qui est derrière SèneTontine')}</Text>
+      <View style={s.card}>
+        <View style={s.founderRow}>
+          <View style={s.founderAvatar}><Text style={s.founderInitials}>PB</Text></View>
+          <View style={{ flex: 1 }}>
+            <Text style={s.founderName}>Papa Birane Diao</Text>
+            <Text style={s.founderRole}>{t('Fondateur et développeur')}</Text>
+          </View>
+        </View>
+        <Text style={s.perkText}>{t('J’ai créé SèneTontine parce que la tontine est au cœur de nos familles et de nos quartiers, mais qu’elle se gère encore sur un cahier ou dans un groupe WhatsApp, avec des oublis et des malentendus. L’objectif : une tontine claire pour tout le monde, sans jamais toucher à votre argent.')}</Text>
+        <Text style={s.perkText}>{t('Une question, une idée ou un souci ? Je réponds personnellement.')}</Text>
+        <View style={{ gap: 6 }}>
+          <Text style={s.contactLink} onPress={() => Linking.openURL(whatsappUrl('Bonjour Papa Birane, j’ai une question sur SèneTontine.', SUPPORT_WHATSAPP))}>WhatsApp : {SUPPORT_DISPLAY}</Text>
+          <Text style={s.contactLink} onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('SèneTontine')}`)}>E-mail : {SUPPORT_EMAIL}</Text>
+        </View>
+        <Text style={s.more} onPress={() => router.push('/legal/about' as any)}>{t('En savoir plus')} →</Text>
+      </View>
+
       {/* CTA final */}
       <View style={s.final}>
         <Text style={s.finalTitle}>{t('Prêt à lancer ta tontine ?')}</Text>
@@ -103,6 +122,10 @@ export default function Landing() {
         <Text style={s.footerLink} onPress={() => router.push('/legal/terms')}>{t('Conditions d’utilisation')}</Text>
         <Text style={s.footerDot}>·</Text>
         <Text style={s.footerLink} onPress={() => router.push('/legal/privacy')}>{t('Confidentialité')}</Text>
+        <Text style={s.footerDot}>·</Text>
+        <Text style={s.footerLink} onPress={() => router.push('/legal/mentions' as any)}>{t('Mentions légales')}</Text>
+        <Text style={s.footerDot}>·</Text>
+        <Text style={s.footerLink} onPress={() => router.push('/legal/about' as any)}>{t('À propos')}</Text>
       </View>
       <Text style={s.copy}>© {new Date().getFullYear()} SèneTontine{Platform.OS === 'web' ? ' · senetontine.com' : ''}</Text>
     </Screen>
@@ -138,11 +161,18 @@ const s = StyleSheet.create({
   priceSup: { fontSize: 14 },
   priceText: { fontSize: 14, lineHeight: 20, color: colors.ink },
 
+  founderRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  founderAvatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' },
+  founderInitials: { color: colors.goldLight, fontWeight: '800', fontSize: 16 },
+  founderName: { fontSize: 16, fontWeight: '800', color: colors.ink },
+  founderRole: { fontSize: 13, color: colors.muted, marginTop: 2 },
+  contactLink: { fontSize: 14, fontWeight: '700', color: colors.goldDark },
   final: { marginTop: 36, padding: 22, borderRadius: 20, backgroundColor: colors.ink, alignItems: 'center', gap: 14 },
   finalTitle: { fontSize: 20, fontWeight: '800', color: colors.white },
   help: { fontSize: 13, color: colors.goldLight, fontWeight: '700' },
 
-  footer: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 28 },
+  footer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginTop: 28 },
+  more: { fontSize: 14, fontWeight: '700', color: colors.goldDark },
   footerLink: { fontSize: 13, color: colors.muted },
   footerDot: { color: colors.subtle },
   copy: { textAlign: 'center', fontSize: 12, color: colors.subtle, marginTop: 8 },

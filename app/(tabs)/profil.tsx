@@ -1,7 +1,7 @@
 // app/(tabs)/profil.tsx — Profil, réglages, administration, suppression de compte.
 import { useT } from '@/src/i18n';
 import { LangSwitch } from '@/src/components/LangSwitch';
-import { SUPPORT_WHATSAPP, whatsappUrl } from '@/src/config';
+import { SUPPORT_EMAIL, SUPPORT_WHATSAPP, whatsappUrl } from '@/src/config';
 import { shrinkToBase64 } from '@/src/lib/shrinkImage';
 import { InstallApp } from '@/src/components/InstallApp';
 import React, { useCallback, useState } from 'react';
@@ -125,6 +125,8 @@ export default function ProfileScreen() {
 
       <SectionTitle title={t('Aide')} />
       <Card style={{ paddingVertical: 2 }}>
+        <ListRow icon="information-circle-outline" label={t('À propos')} onPress={() => router.push('/legal/about' as any)} />
+        <ListRow icon="mail-outline" label="E-mail" detail={SUPPORT_EMAIL} onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=SèneTontine`)} />
         <ListRow icon="logo-whatsapp" label={t('Nous contacter sur WhatsApp')} last
           onPress={() => Linking.openURL(whatsappUrl(`Bonjour SèneTontine, je suis ${name} (${profile?.phone ?? user?.phone ?? ''}).`, SUPPORT_WHATSAPP))} />
       </Card>

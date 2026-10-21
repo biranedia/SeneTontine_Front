@@ -1,7 +1,7 @@
 // app/legal/terms.tsx — Conditions générales d'utilisation
 import React from 'react';
 import LegalPage from '@/src/components/LegalPage';
-import { SUPPORT_DISPLAY } from '@/src/config';
+import { SUPPORT_DISPLAY, SUPPORT_EMAIL } from '@/src/config';
 
 export default function TermsScreen() {
   return (
@@ -18,7 +18,9 @@ export default function TermsScreen() {
         { title: '7. Épargne personnelle', body: 'Les objectifs d’épargne personnelle sont visibles de toi seul. L’application enregistre les montants que tu déclares mettre de côté ; elle ne détient ni ne déplace aucune somme.' },
         { title: '8. Litiges et modération', body: 'SèneTontine n’est pas partie aux engagements financiers entre membres. Tout membre peut signaler un problème depuis l’application ; les administrateurs peuvent suspendre un compte ou annuler une tontine en cas d’abus.' },
         { title: '9. Compte', body: 'Tu es responsable de la confidentialité de ton mot de passe. Tu peux supprimer ton compte à tout moment depuis ton profil, une fois tes tontines en cours terminées.' },
-        { title: '10. Contact', body: `Pour toute question : WhatsApp ${SUPPORT_DISPLAY}.` },
+        { title: '10. Droit applicable', body: 'Les présentes conditions sont régies par le droit sénégalais, notamment la loi n° 2008-08 du 25 janvier 2008 sur les transactions électroniques, la loi n° 2008-11 sur la cybercriminalité et la loi n° 2008-12 sur la protection des données à caractère personnel. SèneTontine n’est ni une banque, ni un établissement de monnaie électronique, ni un système financier décentralisé : elle ne collecte pas d’épargne et ne fournit pas de service de paiement. Les paiements sont assurés par les opérateurs agréés (Wave, Orange Money) et par le prestataire NabooPay. En cas de litige, une solution amiable sera recherchée en priorité ; à défaut, les tribunaux de Dakar sont compétents.' },
+        { title: '11. Éditeur', body: 'SèneTontine est édité par Papa Birane Diao, Dakar, Sénégal. Voir aussi les mentions légales.' },
+        { title: '12. Contact', body: `Pour toute question : ${SUPPORT_EMAIL} ou WhatsApp ${SUPPORT_DISPLAY}.` },
       ]}
     />
   );
