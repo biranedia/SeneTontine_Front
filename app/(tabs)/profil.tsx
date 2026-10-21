@@ -1,4 +1,5 @@
 // app/(tabs)/profil.tsx — Profil, réglages, administration, suppression de compte.
+import { shrinkToBase64 } from '@/src/lib/shrinkImage';
 import { InstallApp } from '@/src/components/InstallApp';
 import React, { useCallback, useState } from 'react';
 import { Alert, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -39,9 +40,12 @@ export default function ProfileScreen() {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!perm.granted) return Alert.alert('Accès refusé', 'Autorise l’accès aux photos pour changer ta photo de profil.');
     const res = await ImagePicker.launchImageLibraryAsync({ base64: true, quality: 0.5, allowsEditing: true, aspect: [1, 1] });
-    if (res.canceled || !res.assets[0]?.base64) return;
+    if (res.canceled || !res.assets[0]) return;
     try {
-      setProfile(await usersApi.updateAvatar(res.assets[0].base64));
+      const b64 = await shrinkToBase64(res.assets[0].uri, res.assets[0].base64);
+      if (!b64) return Alert.alert('Échec', 'Impossible de lire cette photo. Essaie une autre image.');
+      setProfile(await usersApi.updateAvatar(b64));
+      tap();
     } catch (e) {
       Alert.alert('Échec', e instanceof ApiError ? e.message : 'Réessaie plus tard.');
     }
