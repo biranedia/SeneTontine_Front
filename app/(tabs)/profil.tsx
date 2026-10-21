@@ -12,7 +12,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '@/src/context/AuthContext';
 import * as usersApi from '@/src/api/users';
 import * as statsApi from '@/src/api/stats';
-import { ApiError } from '@/src/api/client';
+import { ApiError, api } from '@/src/api/client';
 import { colors, fcfa, radius } from '@/src/theme';
 import { Avatar, Button, Card, Field, ListRow, Screen, SectionTitle, tap } from '@/src/components/ui';
 
@@ -26,11 +26,14 @@ export default function ProfileScreen() {
   const [editName, setEditName] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
+  const [adminPath, setAdminPath] = useState<string | null>(null);
   const load = useCallback(async () => {
     try {
       const [p, st] = await Promise.all([usersApi.me(), statsApi.myStats().catch(() => null)]);
       setProfile(p);
       setStats(st);
+      // Bouton « Espace admin » : le serveur ne donne l'adresse qu'aux comptes admin.
+      api.get<{ path: string }>('/backoffice/entry').then((r) => setAdminPath(r.path)).catch(() => setAdminPath(null));
     } catch {
       // affichage avec les infos de session
     } finally {
@@ -117,6 +120,17 @@ export default function ProfileScreen() {
       </Card>
 
       <InstallApp compact />
+      {adminPath && (
+        <Pressable onPress={() => { tap(); router.push(`/${adminPath}/overview` as any); }} style={s.adminBtn}>
+          <Ionicons name="shield-checkmark" size={22} color={colors.goldLight} />
+          <View style={{ flex: 1 }}>
+            <Text style={s.adminTitle}>Espace admin</Text>
+            <Text style={s.adminSub}>Tableau de bord, utilisateurs, revenus</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={colors.goldLight} />
+        </Pressable>
+      )}
+
       <SectionTitle title={t('Langue')} />
       <Card style={{ padding: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <Text style={{ fontSize: 15, color: colors.ink, fontWeight: '600' }}>Français / Wolof</Text>
@@ -194,6 +208,9 @@ function DeleteAccountSheet({ visible, onClose, onDeleted }: { visible: boolean;
 }
 
 const s = StyleSheet.create({
+  adminBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#1C1A17', borderRadius: 16, padding: 16, marginTop: 20 },
+  adminTitle: { color: '#FFFFFF', fontSize: 16, fontWeight: '800' },
+  adminSub: { color: '#B8B0A2', fontSize: 12, marginTop: 2 },
   head: { alignItems: 'center', marginBottom: 20 },
   camera: { position: 'absolute', right: 0, bottom: 0, width: 28, height: 28, borderRadius: 14, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.bg },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 14 },
