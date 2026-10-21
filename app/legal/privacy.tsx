@@ -1,6 +1,7 @@
 // app/legal/privacy.tsx — Politique de confidentialité
 import React from 'react';
-import LegalPage, { CONTACT_EMAIL } from '@/src/components/LegalPage';
+import LegalPage from '@/src/components/LegalPage';
+import { SUPPORT_DISPLAY } from '@/src/config';
 
 export default function PrivacyScreen() {
   return (
@@ -14,7 +15,7 @@ export default function PrivacyScreen() {
         { title: 'Paiements', body: 'Les cotisations entre membres ne passent jamais par l’application. Les frais de création de tontine sont réglés sur la page sécurisée de notre prestataire NabooPay, à qui nous transmettons ton nom et ton numéro pour le paiement ; nous ne voyons ni ne conservons jamais tes codes Wave / Orange Money ou numéros de carte.' },
         { title: 'Sécurité', body: 'Les échanges avec le serveur sont chiffrés (HTTPS). La session est conservée dans le stockage sécurisé du téléphone.' },
         { title: 'Conservation et suppression', body: 'Tu peux supprimer ton compte depuis Profil › Supprimer mon compte. Ton nom, ton numéro et ta photo sont alors effacés immédiatement ; tes cotisations passées restent dans l’historique des tontines concernées sous la mention « Utilisateur supprimé », pour que les comptes des autres membres restent justes.' },
-        { title: 'Contact', body: `Pour exercer tes droits ou poser une question : ${CONTACT_EMAIL}.` },
+        { title: 'Contact', body: `Pour exercer tes droits ou poser une question : WhatsApp ${SUPPORT_DISPLAY}.` },
       ]}
     />
   );

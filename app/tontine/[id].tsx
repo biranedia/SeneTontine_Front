@@ -1,9 +1,10 @@
 // app/tontine/[id].tsx — Détail d'une tontine : payer, confirmer, verser le pot, membres.
 import React, { useCallback, useState } from 'react';
-import { Alert, Modal, Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Linking, Modal, Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
+import { whatsappUrl } from '@/src/config';
 import { useAuth } from '@/src/context/AuthContext';
 import * as tontinesApi from '@/src/api/tontines';
 import * as paymentsApi from '@/src/api/payments';
@@ -87,13 +88,17 @@ export default function TontineDetailScreen() {
     Alert.alert('Copié', `Numéro ${label} copié.`);
   };
 
-  const shareInvite = () => Share.share({
-    message: `Rejoins ma tontine « ${t.name} » sur SèneTontine 🤝\nCotisation : ${t.cotisation}\nCode d'invitation : ${t.inviteCode}`,
-  }).catch(() => {});
+  // WhatsApp d'abord (le plus utilisé au Sénégal) ; partage système en secours.
+  const sendWhatsApp = (message: string) =>
+    Linking.openURL(whatsappUrl(message)).catch(() => Share.share({ message }).catch(() => {}));
 
-  const remind = (m: tontinesApi.MemberInfo) => Share.share({
-    message: `Salut ${m.name.split(' ')[0]} 👋 Petit rappel pour la tontine « ${t.name} » : ta cotisation de ${fcfa(m.amountDue)} est attendue avant le ${t.prochainTour}. Merci !`,
-  }).catch(() => {});
+  const shareInvite = () => sendWhatsApp(
+    `Rejoins ma tontine « ${t.name} » sur SèneTontine 🤝\nCotisation : ${t.cotisation}\nCode d'invitation : ${t.inviteCode}\nInscris-toi ici : https://senetontine.com/join?code=${t.inviteCode}`,
+  );
+
+  const remind = (m: tontinesApi.MemberInfo) => sendWhatsApp(
+    `Salut ${m.name.split(' ')[0]} 👋 Petit rappel pour la tontine « ${t.name} » : ta cotisation de ${fcfa(m.amountDue)} est attendue avant le ${t.prochainTour}. Tu peux la déclarer sur https://senetontine.com. Merci !`,
+  );
 
   const renew = async () => {
     setBusy('renew');

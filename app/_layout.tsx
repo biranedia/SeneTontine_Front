@@ -9,7 +9,7 @@ import { Loading } from '@/src/components/ui';
 import { colors } from '@/src/theme';
 
 // Écrans accessibles sans être connecté : connexion, inscription, pages légales.
-const PUBLIC_SEGMENTS = [undefined, 'register', 'legal'];
+const PUBLIC_SEGMENTS = [undefined, 'login', 'register', 'legal'];
 
 function AuthGate({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -22,7 +22,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     if (loading) return;
     const first = segments[0] as string | undefined;
     const onPublic = PUBLIC_SEGMENTS.includes(first);
-    const onAuthScreen = first === undefined || first === 'register';
+    const onAuthScreen = first === undefined || first === 'login' || first === 'register';
     if (!user && !onPublic) {
       wanted.current = pathname; // mémorisé en mémoire uniquement, jamais dans l'URL
       router.replace('/');

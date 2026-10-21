@@ -1,6 +1,7 @@
 // app/legal/terms.tsx — Conditions générales d'utilisation
 import React from 'react';
-import LegalPage, { CONTACT_EMAIL } from '@/src/components/LegalPage';
+import LegalPage from '@/src/components/LegalPage';
+import { SUPPORT_DISPLAY } from '@/src/config';
 
 export default function TermsScreen() {
   return (
@@ -17,7 +18,7 @@ export default function TermsScreen() {
         { title: '7. Épargne personnelle', body: 'Les objectifs d’épargne personnelle sont visibles de toi seul. L’application enregistre les montants que tu déclares mettre de côté ; elle ne détient ni ne déplace aucune somme.' },
         { title: '8. Litiges et modération', body: 'SèneTontine n’est pas partie aux engagements financiers entre membres. Tout membre peut signaler un problème depuis l’application ; les administrateurs peuvent suspendre un compte ou annuler une tontine en cas d’abus.' },
         { title: '9. Compte', body: 'Tu es responsable de la confidentialité de ton mot de passe. Tu peux supprimer ton compte à tout moment depuis ton profil, une fois tes tontines en cours terminées.' },
-        { title: '10. Contact', body: `Pour toute question : ${CONTACT_EMAIL}.` },
+        { title: '10. Contact', body: `Pour toute question : WhatsApp ${SUPPORT_DISPLAY}.` },
       ]}
     />
   );

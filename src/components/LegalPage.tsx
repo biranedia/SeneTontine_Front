@@ -4,7 +4,6 @@ import { colors } from '../theme';
 import { PageHeader, Screen } from './ui';
 
 // Adresse de contact affichée dans les pages légales et sur la fiche Play Store.
-export const CONTACT_EMAIL = 'contact@senetontine.app';
 
 export default function LegalPage({ title, updated, sections }: {
   title: string; updated: string; sections: { title: string; body: string }[];

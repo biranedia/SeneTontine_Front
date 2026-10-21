@@ -1,8 +1,9 @@
 // app/(tabs)/profil.tsx — Profil, réglages, administration, suppression de compte.
+import { SUPPORT_WHATSAPP, whatsappUrl } from '@/src/config';
 import { shrinkToBase64 } from '@/src/lib/shrinkImage';
 import { InstallApp } from '@/src/components/InstallApp';
 import React, { useCallback, useState } from 'react';
-import { Alert, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Modal, Pressable, StyleSheet, Text, TextInput, View, Linking } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -113,6 +114,12 @@ export default function ProfileScreen() {
       </Card>
 
       <InstallApp compact />
+      <SectionTitle title="Aide" />
+      <Card style={{ paddingVertical: 2 }}>
+        <ListRow icon="logo-whatsapp" label="Nous contacter sur WhatsApp" last
+          onPress={() => Linking.openURL(whatsappUrl(`Bonjour SèneTontine, je suis ${name} (${profile?.phone ?? user?.phone ?? ''}).`, SUPPORT_WHATSAPP))} />
+      </Card>
+
       <SectionTitle title="Informations" />
       <Card style={{ paddingVertical: 2 }}>
         <ListRow icon="document-outline" label="Conditions d’utilisation" onPress={() => router.push('/legal/terms')} />

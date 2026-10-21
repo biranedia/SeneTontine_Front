@@ -4,7 +4,8 @@
 // nombre de signalements qu'il a lui-meme soumis), plutot que de naviguer entre plusieurs
 // ecrans pour reconstituer le contexte a la main.
 import React, { useCallback, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, ActivityIndicator, RefreshControl, Alert, Linking } from 'react-native';
+import { whatsappUrl } from '@/src/config';
 import { useRouter, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { colors, radius, shadow } from '@/src/theme';
 import * as adminApi from '@/src/api/admin';
@@ -19,6 +20,7 @@ export default function AdminUserDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [tempPwd, setTempPwd] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -75,6 +77,32 @@ export default function AdminUserDetailScreen() {
             </View>
           </View>
           <Text style={s.since}>Inscrit(e) depuis le {new Date(data.user.createdAt).toLocaleDateString('fr-FR')}</Text>
+
+          <TouchableOpacity style={s.resetBtn} onPress={() => Alert.alert(
+            'Réinitialiser le mot de passe ?',
+            `Un mot de passe temporaire sera créé pour ${data.user.fullName}. Toutes ses sessions seront déconnectées.`,
+            [{ text: 'Annuler', style: 'cancel' }, { text: 'Réinitialiser', style: 'destructive', onPress: async () => {
+              try {
+                const r = await adminApi.resetPassword(data.user.id);
+                setTempPwd(r.temporaryPassword);
+              } catch (e) {
+                Alert.alert('Échec', e instanceof ApiError ? e.message : 'Réessaie plus tard.');
+              }
+            } }],
+          )}>
+            <Text style={s.resetText}>🔑 Réinitialiser le mot de passe</Text>
+          </TouchableOpacity>
+          {tempPwd && (
+            <View style={s.tempBox}>
+              <Text style={s.tempLabel}>Mot de passe temporaire (à envoyer à l’utilisateur) :</Text>
+              <Text selectable style={s.tempPwd}>{tempPwd}</Text>
+              <TouchableOpacity onPress={() => Linking.openURL(whatsappUrl(
+                `Bonjour ${data.user.fullName.split(' ')[0]}, voici ton mot de passe temporaire SèneTontine : ${tempPwd}\nConnecte-toi sur https://senetontine.com/login puis change-le dans ton profil.`,
+                data.user.phone.replace(/\D/g, '').replace(/^(7\d{8})$/, '221$1')))}>
+                <Text style={s.tempWa}>Envoyer par WhatsApp →</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           <View style={s.statsGrid}>
             <StatBox icon="🤝" value={String(data.tontines.length)} label="Tontines" />
@@ -134,6 +162,12 @@ function StatBox({ icon, value, label }: { icon: string; value: string; label: s
 }
 
 const s = StyleSheet.create({
+  resetBtn: { marginTop: 14, paddingVertical: 12, borderRadius: 12, borderWidth: 1, borderColor: colors.border, alignItems: 'center', backgroundColor: colors.surface },
+  resetText: { fontSize: 14, fontWeight: '700', color: colors.ink },
+  tempBox: { marginTop: 10, padding: 14, borderRadius: 12, backgroundColor: colors.goldSoft },
+  tempLabel: { fontSize: 12, color: colors.muted },
+  tempPwd: { fontSize: 22, fontWeight: '800', color: colors.ink, letterSpacing: 2, marginVertical: 6 },
+  tempWa: { fontSize: 14, fontWeight: '700', color: colors.success },
   root: { flex: 1, backgroundColor: colors.bg },
   center: { alignItems: 'center', justifyContent: 'center' },
   header: { backgroundColor: colors.deep, paddingTop: 54, paddingHorizontal: 24, paddingBottom: 20 },

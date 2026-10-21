@@ -1,7 +1,7 @@
 // app/join.tsx — Rejoindre une tontine avec le code reçu (WhatsApp, SMS...).
 import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as tontinesApi from '@/src/api/tontines';
 import { ApiError } from '@/src/api/client';
@@ -10,7 +10,8 @@ import { Button, PageHeader, Screen } from '@/src/components/ui';
 
 export default function JoinScreen() {
   const router = useRouter();
-  const [code, setCode] = useState('');
+  const params = useLocalSearchParams<{ code?: string }>();
+  const [code, setCode] = useState(typeof params.code === 'string' ? params.code.toUpperCase() : '');
   const [loading, setLoading] = useState(false);
 
   const submit = async () => {

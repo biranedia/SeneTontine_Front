@@ -129,3 +129,8 @@ export interface Analytics {
 export function analytics(days: 7 | 30 | 90) {
   return api.get<Analytics>(`/admin/analytics?days=${days}`);
 }
+
+// Mot de passe oublié : génère un mot de passe temporaire (à transmettre par WhatsApp).
+export function resetPassword(userId: number) {
+  return api.post<{ temporaryPassword: string }>(`/admin/users/${userId}/reset-password`, {});
+}
