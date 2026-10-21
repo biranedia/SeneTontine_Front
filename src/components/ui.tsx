@@ -1,5 +1,5 @@
 // app/components/ui.tsx — Composants partagés du design system SèneTontine.
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ActivityIndicator, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput,
   TextInputProps, View, ViewStyle, StyleProp, KeyboardAvoidingView, Platform,
@@ -169,16 +169,27 @@ export function Segmented<T extends string>({ options, value, onChange }: {
   );
 }
 
-export function Field({ label, icon, suffix, hint, ...props }: TextInputProps & {
+export function Field({ label, icon, suffix, hint, secureTextEntry, ...props }: TextInputProps & {
   label: string; icon?: IconName; suffix?: string; hint?: string;
 }) {
+  // Champ mot de passe : œil pour afficher / masquer ce qu'on tape.
+  const [visible, setVisible] = useState(false);
+  const isPassword = !!secureTextEntry;
   return (
     <View style={{ marginBottom: 16 }}>
       <Text style={s.fieldLabel}>{label}</Text>
       <View style={s.fieldWrap}>
         {icon && <Ionicons name={icon} size={18} color={colors.subtle} style={{ marginRight: 10 }} />}
-        <TextInput placeholderTextColor={colors.subtle} style={s.fieldInput} {...props} />
+        <TextInput placeholderTextColor={colors.subtle} style={s.fieldInput}
+          secureTextEntry={isPassword && !visible} autoCapitalize={isPassword ? 'none' : props.autoCapitalize}
+          autoCorrect={isPassword ? false : props.autoCorrect} {...props} />
         {!!suffix && <Text style={s.fieldSuffix}>{suffix}</Text>}
+        {isPassword && (
+          <Pressable onPress={() => setVisible((v) => !v)} hitSlop={10}
+            accessibilityRole="button" accessibilityLabel={visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}>
+            <Ionicons name={visible ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.muted} />
+          </Pressable>
+        )}
       </View>
       {!!hint && <Text style={s.fieldHint}>{hint}</Text>}
     </View>

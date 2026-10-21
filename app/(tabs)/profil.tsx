@@ -1,4 +1,5 @@
 // app/(tabs)/profil.tsx — Profil, réglages, administration, suppression de compte.
+import { InstallApp } from '@/src/components/InstallApp';
 import React, { useCallback, useState } from 'react';
 import { Alert, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -107,6 +108,7 @@ export default function ProfileScreen() {
         )} />
       </Card>
 
+      <InstallApp compact />
       <SectionTitle title="Informations" />
       <Card style={{ paddingVertical: 2 }}>
         <ListRow icon="document-outline" label="Conditions d’utilisation" onPress={() => router.push('/legal/terms')} />

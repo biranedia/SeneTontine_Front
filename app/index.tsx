@@ -1,4 +1,5 @@
 // app/index.tsx — Connexion
+import { InstallApp } from '@/src/components/InstallApp';
 import React, { useRef, useState } from 'react';
 import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -12,7 +13,6 @@ export default function LoginScreen() {
   const { login } = useAuth();
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
-  const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const busy = useRef(false);
 
@@ -42,14 +42,14 @@ export default function LoginScreen() {
       <Text style={s.h}>Connexion</Text>
       <Field label="Numéro de téléphone" icon="call-outline" placeholder="77 123 45 67" keyboardType="phone-pad"
         value={phone} onChangeText={setPhone} autoComplete="tel" />
-      <Field label="Mot de passe" icon="lock-closed-outline" placeholder="••••••••" secureTextEntry={!showPwd}
+      <Field label="Mot de passe" icon="lock-closed-outline" placeholder="••••••••" secureTextEntry
         value={password} onChangeText={setPassword} onSubmitEditing={submit} />
-      <Button label={showPwd ? 'Masquer le mot de passe' : 'Afficher le mot de passe'} variant="ghost" small onPress={() => setShowPwd((v) => !v)} style={{ alignSelf: 'flex-start', marginTop: -8, marginBottom: 8 }} />
 
       <Button label="Se connecter" onPress={submit} loading={loading} />
       <View style={s.footer}>
         <Text style={s.footerText}>Pas encore de compte ?</Text>
         <Button label="Créer un compte" variant="secondary" onPress={() => router.push('/register')} style={{ marginTop: 10 }} />
+        <InstallApp />
       </View>
     </Screen>
   );

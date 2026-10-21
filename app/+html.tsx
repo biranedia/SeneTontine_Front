@@ -3,6 +3,11 @@ import React from 'react';
 import { ScrollViewStyleReset } from 'expo-router/html';
 
 const registerSw = `
+window.addEventListener('beforeinstallprompt', function (e) {
+  e.preventDefault();
+  window.__installPrompt = e;
+  window.dispatchEvent(new Event('installable'));
+});
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('/sw.js').catch(function () {});
