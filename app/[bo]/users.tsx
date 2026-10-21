@@ -1,28 +1,22 @@
-// app/[bo]/users.tsx — Gestion des utilisateurs (admin uniquement)
-// Recherche + liste des comptes, avec possibilite de bloquer/debloquer un compte ou de
-// changer son role, d'ouvrir la fiche complete d'un utilisateur (historique tontines/paiements/
-// signalements), et d'exporter la liste en CSV. Toute action passe par l'API (jamais de
-// logique cote client) : le serveur revalide systematiquement les garde-fous (pas
-// d'auto-modification, pas de blocage direct d'un autre admin, jamais retrograder le dernier
-// admin - voir AdminService).
-import React, { useCallback, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, TextInput, Alert, ActivityIndicator, RefreshControl, Platform } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
-import { colors, radius, shadow } from '@/src/theme';
+// app/[bo]/users.tsx — Gestion des utilisateurs : recherche, filtres, actions rapides.
+import React, { useCallback, useMemo, useState } from 'react';
+import { Alert, Platform, Pressable, Text, View } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
 import * as adminApi from '@/src/api/admin';
-import { ApiError, backofficeKey as bo } from '@/src/api/client';
+import { ApiError } from '@/src/api/client';
 import { useAuth } from '@/src/context/AuthContext';
+import { ABtn, ACard, AdminPage, Badge, Chips, Empty, ErrorBox, Loader, SearchBox, adminHref, fmtDate, st } from '@/src/components/admin/AdminUI';
 
+type Filter = 'all' | 'active' | 'blocked' | 'admin';
 
 export default function AdminUsersScreen() {
   const router = useRouter();
   const { user: me } = useAuth();
   const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<Filter>('all');
   const [users, setUsers] = useState<adminApi.AdminUserInfo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [busyId, setBusyId] = useState<number | null>(null);
-  const [exporting, setExporting] = useState(false);
+  const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async (q?: string) => {
@@ -33,213 +27,98 @@ export default function AdminUsersScreen() {
       setError(e instanceof ApiError ? e.message : 'Impossible de charger les utilisateurs.');
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   }, []);
 
   useFocusEffect(useCallback(() => { load(query); }, [load]));
 
-  const onRefresh = () => { setRefreshing(true); load(query); };
-  const onSearch = () => { setLoading(true); load(query); };
+  const visible = useMemo(() => users.filter((u) =>
+    !u.phone.startsWith('deleted-') && (
+      filter === 'all' || (filter === 'active' && u.active) || (filter === 'blocked' && !u.active) || (filter === 'admin' && u.role === 'ADMIN'))),
+  [users, filter]);
 
-  const onExport = async () => {
-    if (Platform.OS !== 'web') {
-      Alert.alert('Export disponible sur le web', "Ouvre l'app dans un navigateur PC pour télécharger le fichier CSV.");
-      return;
-    }
-    setExporting(true);
+  const run = async (key: string, fn: () => Promise<unknown>, ok?: string) => {
+    setBusy(key);
     try {
-      await adminApi.downloadCsv('users');
+      await fn();
+      await load(query);
+      if (ok) Alert.alert('C’est fait', ok);
     } catch (e) {
-      Alert.alert('Export impossible', e instanceof ApiError ? e.message : 'Réessaie plus tard.');
+      Alert.alert('Action impossible', e instanceof ApiError ? e.message : 'Réessaie plus tard.');
     } finally {
-      setExporting(false);
+      setBusy(null);
     }
   };
 
-  const toggleActive = (u: adminApi.AdminUserInfo) => {
-    const willBlock = u.active;
-    Alert.alert(
-      willBlock ? 'Bloquer ce compte ?' : 'Débloquer ce compte ?',
-      willBlock
-        ? `${u.fullName} ne pourra plus se connecter, et sera immédiatement déconnecté(e) de toute session active.`
-        : `${u.fullName} pourra à nouveau se connecter normalement.`,
-      [
-        { text: 'Annuler', style: 'cancel' },
-        {
-          text: willBlock ? 'Bloquer' : 'Débloquer',
-          style: willBlock ? 'destructive' : 'default',
-          onPress: async () => {
-            setBusyId(u.id);
-            try {
-              const updated = await adminApi.setUserActive(u.id, !willBlock);
-              setUsers((prev) => prev.map((x) => (x.id === updated.id ? updated : x)));
-            } catch (e) {
-              Alert.alert('Action impossible', e instanceof ApiError ? e.message : 'Réessaie plus tard.');
-            } finally {
-              setBusyId(null);
-            }
-          },
-        },
-      ]
-    );
+  const confirm = (title: string, msg: string, label: string, fn: () => void, destructive = false) =>
+    Alert.alert(title, msg, [{ text: 'Annuler', style: 'cancel' }, { text: label, style: destructive ? 'destructive' : 'default', onPress: fn }]);
+
+  const exportCsv = () => {
+    if (Platform.OS !== 'web') return Alert.alert('Export', 'Disponible depuis un ordinateur.');
+    run('export', () => adminApi.downloadCsv('users'));
   };
 
-  const toggleRole = (u: adminApi.AdminUserInfo) => {
-    const promote = u.role === 'MEMBER';
-    Alert.alert(
-      promote ? 'Nommer administrateur ?' : 'Retirer les droits admin ?',
-      promote
-        ? `${u.fullName} aura accès à toutes les fonctions d'administration de la plateforme.`
-        : `${u.fullName} redeviendra un membre normal.`,
-      [
-        { text: 'Annuler', style: 'cancel' },
-        {
-          text: promote ? 'Nommer admin' : 'Rétrograder',
-          style: promote ? 'default' : 'destructive',
-          onPress: async () => {
-            setBusyId(u.id);
-            try {
-              const updated = await adminApi.setUserRole(u.id, promote ? 'ADMIN' : 'MEMBER');
-              setUsers((prev) => prev.map((x) => (x.id === updated.id ? updated : x)));
-            } catch (e) {
-              Alert.alert('Action impossible', e instanceof ApiError ? e.message : 'Réessaie plus tard.');
-            } finally {
-              setBusyId(null);
-            }
-          },
-        },
-      ]
-    );
-  };
+  const count = (f: Filter) => users.filter((u) => !u.phone.startsWith('deleted-') && (
+    f === 'all' || (f === 'active' && u.active) || (f === 'blocked' && !u.active) || (f === 'admin' && u.role === 'ADMIN'))).length;
 
   return (
-    <View style={s.root}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.deep} />
-      <View style={s.header}>
-        <View style={s.headerTop}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Text style={s.back}>← Retour</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onExport} disabled={exporting} style={s.exportBtn}>
-            {exporting ? <ActivityIndicator color={colors.gold} size="small" /> : <Text style={s.exportBtnText}>⬇️ Exporter CSV</Text>}
-          </TouchableOpacity>
-        </View>
-        <Text style={s.title}>Utilisateurs 👤</Text>
-        <Text style={s.subtitle}>{users.length} compte{users.length > 1 ? 's' : ''} affiché{users.length > 1 ? 's' : ''}</Text>
-
-        <View style={s.searchRow}>
-          <TextInput
-            style={s.searchInput}
-            placeholder="Rechercher par nom ou téléphone..."
-            placeholderTextColor={colors.gray}
-            value={query}
-            onChangeText={setQuery}
-            onSubmitEditing={onSearch}
-            returnKeyType="search"
-          />
-          <TouchableOpacity style={s.searchBtn} onPress={onSearch}>
-            <Text style={{ fontSize: 15 }}>🔍</Text>
-          </TouchableOpacity>
-        </View>
+    <AdminPage title="Utilisateurs" subtitle="Recherche, blocage, rôles, suppression"
+      onRefresh={() => { setLoading(true); load(query); }}
+      actions={<ABtn icon="download-outline" label="Exporter CSV" onPress={exportCsv} busy={busy === 'export'} />}>
+      <View style={st.toolbar}>
+        <SearchBox value={query} onChangeText={setQuery} onSubmit={() => { setLoading(true); load(query); }}
+          placeholder="Rechercher par nom ou téléphone…" />
+        <ABtn icon="search" label="Rechercher" tone="primary" onPress={() => { setLoading(true); load(query); }} />
+      </View>
+      <View style={{ marginBottom: 14 }}>
+        <Chips value={filter} onChange={setFilter} options={[
+          { value: 'all', label: 'Tous', count: count('all') },
+          { value: 'active', label: 'Actifs', count: count('active') },
+          { value: 'blocked', label: 'Bloqués', count: count('blocked') },
+          { value: 'admin', label: 'Admins', count: count('admin') },
+        ]} />
       </View>
 
-      {loading ? (
-        <View style={[s.center, { flex: 1 }]}><ActivityIndicator color={colors.gold} /></View>
-      ) : error ? (
-        <View style={[s.center, { flex: 1, paddingHorizontal: 30 }]}><Text style={s.errorText}>{error}</Text></View>
-      ) : (
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
-          showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.gold} />}
-        >
-          {users.length === 0 && <Text style={s.emptyText}>Aucun utilisateur trouvé.</Text>}
-
-          {users.map((u) => {
-            const isSelf = u.id === me?.userId;
+      {loading ? <Loader /> : error ? <ErrorBox text={error} onRetry={() => load(query)} /> : (
+        <ACard style={{ paddingVertical: 4 }}>
+          {visible.length === 0 ? <Empty text="Aucun utilisateur." /> : visible.map((u, i) => {
+            const self = me?.phone === u.phone;
             return (
-              <TouchableOpacity
-                key={u.id}
-                style={[s.card, !u.active && s.cardBlocked]}
-                activeOpacity={0.85}
-                onPress={() => router.push({ pathname: `/${bo()}/user-detail` as any, params: { id: String(u.id) } })}
-              >
-                <View style={s.cardTop}>
+              <View key={u.id} style={[st.row, { flexWrap: 'wrap' }, i === visible.length - 1 && st.rowLast]}>
+                <Pressable style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1, minWidth: 220 }}
+                  onPress={() => router.push(adminHref('user-detail', { id: String(u.id) }))}>
+                  <View style={st.avatar}><Text style={st.avatarText}>{u.fullName.slice(0, 1).toUpperCase()}</Text></View>
                   <View style={{ flex: 1 }}>
-                    <Text style={s.name}>{u.fullName}</Text>
-                    <Text style={s.phone}>{u.phone}</Text>
+                    <Text style={st.name} numberOfLines={1}>{u.fullName}{self ? ' (toi)' : ''}</Text>
+                    <Text style={st.meta}>{u.phone} · inscrit le {fmtDate(u.createdAt)}</Text>
                   </View>
-                  {u.role === 'ADMIN' && (
-                    <View style={s.adminBadge}><Text style={s.adminBadgeText}>ADMIN</Text></View>
+                  <View style={{ flexDirection: 'row', gap: 6 }}>
+                    {u.role === 'ADMIN' && <Badge label="Admin" tone="gold" />}
+                    <Badge label={u.active ? 'Actif' : 'Bloqué'} tone={u.active ? 'green' : 'red'} />
+                  </View>
+                </Pressable>
+                <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
+                  <ABtn icon="eye-outline" label="Voir" onPress={() => router.push(adminHref('user-detail', { id: String(u.id) }))} />
+                  {!self && (
+                    <ABtn icon={u.active ? 'lock-closed-outline' : 'lock-open-outline'} label={u.active ? 'Bloquer' : 'Débloquer'}
+                      busy={busy === `a${u.id}`}
+                      onPress={() => confirm(u.active ? 'Bloquer ce compte ?' : 'Débloquer ce compte ?',
+                        u.active ? `${u.fullName} sera déconnecté et ne pourra plus se connecter.` : `${u.fullName} pourra de nouveau se connecter.`,
+                        u.active ? 'Bloquer' : 'Débloquer',
+                        () => run(`a${u.id}`, () => adminApi.setUserActive(u.id, !u.active)), u.active)} />
+                  )}
+                  {!self && u.role !== 'ADMIN' && (
+                    <ABtn icon="trash-outline" label="Supprimer" tone="danger" busy={busy === `d${u.id}`}
+                      onPress={() => confirm('Supprimer ce compte ?',
+                        `Le compte de ${u.fullName} sera anonymisé et fermé. Ses tontines en cours qu’il a créées seront annulées. Action irréversible.`,
+                        'Supprimer', () => run(`d${u.id}`, () => adminApi.deleteUser(u.id), 'Compte supprimé.'), true)} />
                   )}
                 </View>
-
-                <View style={s.tagsRow}>
-                  <View style={[s.tag, u.active ? s.tagOk : s.tagBlocked]}>
-                    <Text style={s.tagText}>{u.active ? 'Actif' : 'Bloqué'}</Text>
-                  </View>
-                </View>
-
-                {isSelf ? (
-                  <Text style={s.selfHint}>C'est ton propre compte — actions désactivées ici.</Text>
-                ) : busyId === u.id ? (
-                  <ActivityIndicator color={colors.gold} style={{ marginTop: 10 }} />
-                ) : (
-                  <View style={s.actionsRow}>
-                    <TouchableOpacity style={s.actionBtn} onPress={(e) => { e.stopPropagation?.(); toggleActive(u); }}>
-                      <Text style={s.actionBtnText}>{u.active ? '🚫 Bloquer' : '✅ Débloquer'}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={s.actionBtn} onPress={(e) => { e.stopPropagation?.(); toggleRole(u); }}>
-                      <Text style={s.actionBtnText}>{u.role === 'MEMBER' ? '⬆️ Nommer admin' : '⬇️ Rétrograder'}</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </TouchableOpacity>
+              </View>
             );
           })}
-        </ScrollView>
+        </ACard>
       )}
-    </View>
+    </AdminPage>
   );
 }
-
-const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg },
-  center: { alignItems: 'center', justifyContent: 'center' },
-  header: { backgroundColor: colors.deep, paddingTop: 54, paddingHorizontal: 24, paddingBottom: 20 },
-  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  back: { color: colors.gold, fontSize: 13, fontWeight: '500' },
-  exportBtn: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: radius.pill, backgroundColor: colors.deepAlt },
-  exportBtnText: { color: colors.gold, fontSize: 11, fontWeight: '600' },
-  title: { color: colors.cream, fontSize: 20, fontWeight: 'bold' },
-  subtitle: { color: colors.gray, fontSize: 12, marginTop: 3, marginBottom: 14 },
-
-  searchRow: { flexDirection: 'row', gap: 8 },
-  searchInput: { flex: 1, backgroundColor: colors.deepAlt, borderRadius: radius.md, paddingHorizontal: 14, paddingVertical: 11, color: colors.cream, fontSize: 13 },
-  searchBtn: { width: 42, height: 42, borderRadius: radius.md, backgroundColor: colors.deepAlt, alignItems: 'center', justifyContent: 'center' },
-
-  errorText: { color: colors.error, fontSize: 13, textAlign: 'center' },
-  emptyText: { color: colors.gray, fontSize: 13, textAlign: 'center', marginTop: 20 },
-
-  card: { backgroundColor: colors.white, borderRadius: radius.md, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: colors.border, ...shadow.soft },
-  cardBlocked: { borderColor: colors.error, backgroundColor: colors.errorBg },
-  cardTop: { flexDirection: 'row', alignItems: 'flex-start' },
-  name: { fontSize: 14, fontWeight: '700', color: colors.ink },
-  phone: { fontSize: 12, color: colors.gray, marginTop: 2 },
-  adminBadge: { backgroundColor: colors.gold, borderRadius: radius.pill, paddingHorizontal: 8, paddingVertical: 3 },
-  adminBadgeText: { fontSize: 10, fontWeight: '800', color: colors.deep },
-
-  tagsRow: { flexDirection: 'row', gap: 6, marginTop: 8 },
-  tag: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.pill },
-  tagOk: { backgroundColor: colors.successBg },
-  tagNeutral: { backgroundColor: colors.warnBg },
-  tagBlocked: { backgroundColor: colors.errorBg },
-  tagText: { fontSize: 10, fontWeight: '600', color: colors.earth },
-
-  selfHint: { fontSize: 11, color: colors.gray, marginTop: 10, fontStyle: 'italic' },
-  actionsRow: { flexDirection: 'row', gap: 8, marginTop: 10 },
-  actionBtn: { flex: 1, backgroundColor: colors.bg, borderRadius: radius.md, paddingVertical: 10, alignItems: 'center', borderWidth: 1, borderColor: colors.border },
-  actionBtnText: { fontSize: 12, fontWeight: '600', color: colors.earth },
-});

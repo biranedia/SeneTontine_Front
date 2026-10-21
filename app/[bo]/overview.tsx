@@ -6,7 +6,8 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { colors, fcfa } from '@/src/theme';
-import { Screen, PageHeader, Card, Segmented, SectionTitle, ListRow, Loading, EmptyState, tap } from '@/src/components/ui';
+import { Card, Segmented, SectionTitle, Loading, EmptyState, tap } from '@/src/components/ui';
+import { AdminPage, adminHref } from '@/src/components/admin/AdminUI';
 import * as adminApi from '@/src/api/admin';
 import { ApiError, backofficeKey as bo } from '@/src/api/client';
 
@@ -160,8 +161,7 @@ export default function AdminOverviewScreen() {
   const sum = (pts: adminApi.DayPoint[]) => pts.reduce((a, b) => a + b.value, 0);
 
   return (
-    <Screen refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(period); }}>
-      <PageHeader back title="Tableau de bord" subtitle="Pilotage de SèneTontine" />
+    <AdminPage title="Tableau de bord" subtitle="Pilotage de SèneTontine" onRefresh={() => { setRefreshing(true); load(period); }}>
 
       <View style={{ marginBottom: 16 }}>
         <Segmented<Period>
@@ -179,7 +179,7 @@ export default function AdminOverviewScreen() {
           {(data.openIncidents > 0 || data.pendingDeclarations > 0) && (
             <View style={{ flexDirection: 'row', gap: 10, marginBottom: 14 }}>
               {data.openIncidents > 0 && (
-                <Pressable style={[s.alert, { backgroundColor: colors.dangerSoft }]} onPress={() => { tap(); router.push(`/${bo()}/incidents` as any); }}>
+                <Pressable style={[s.alert, { backgroundColor: colors.dangerSoft }]} onPress={() => { tap(); router.replace(adminHref('incidents')); }}>
                   <Ionicons name="warning-outline" size={18} color={colors.danger} />
                   <Text style={[s.alertText, { color: colors.danger }]}>{data.openIncidents} signalement{data.openIncidents > 1 ? 's' : ''} ouvert{data.openIncidents > 1 ? 's' : ''}</Text>
                 </Pressable>
@@ -224,17 +224,9 @@ export default function AdminOverviewScreen() {
             ))}
           </Card>
 
-          <SectionTitle title="Gestion" />
-          <Card style={{ paddingVertical: 4 }}>
-            <ListRow icon="people-circle-outline" label="Utilisateurs" onPress={() => router.push(`/${bo()}/users` as any)} />
-            <ListRow icon="albums-outline" label="Tontines" onPress={() => router.push(`/${bo()}/tontines` as any)} />
-            <ListRow icon="flag-outline" label="Signalements" detail={data.openIncidents ? `${data.openIncidents}` : undefined} onPress={() => router.push(`/${bo()}/incidents` as any)} />
-            <ListRow icon="megaphone-outline" label="Annonce à tous" onPress={() => router.push(`/${bo()}/broadcast` as any)} />
-            <ListRow icon="document-text-outline" label="Journal d’audit" onPress={() => router.push(`/${bo()}/audit-logs` as any)} last />
-          </Card>
         </Animated.View>
       ) : null}
-    </Screen>
+    </AdminPage>
   );
 }
 

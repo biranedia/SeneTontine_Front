@@ -8,6 +8,7 @@
 /:bo/users         /[bo]/users        200
 /:bo/user-detail   /[bo]/user-detail  200
 /:bo/tontines      /[bo]/tontines     200
+/:bo/revenue       /[bo]/revenue      200
 /:bo/incidents     /[bo]/incidents    200
 /:bo/broadcast     /[bo]/broadcast    200
 /:bo/audit-logs    /[bo]/audit-logs   200

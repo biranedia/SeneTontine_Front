@@ -134,3 +134,26 @@ export function analytics(days: 7 | 30 | 90) {
 export function resetPassword(userId: number) {
   return api.post<{ temporaryPassword: string }>(`/admin/users/${userId}/reset-password`, {});
 }
+
+// ---- Gestion avancée ----
+export function deleteUser(userId: number) {
+  return api.delete<void>(`/admin/users/${userId}`);
+}
+
+export function updateUser(userId: number, fullName: string, phone: string) {
+  return api.put<void>(`/admin/users/${userId}`, { fullName, phone });
+}
+
+export function grantCredit(userId: number) {
+  return api.post<void>(`/admin/users/${userId}/grant-credit`, {});
+}
+
+export interface RevenueItem {
+  id: number; userName: string; userPhone: string; purpose: 'CREATE' | 'RENEW'; tontineName: string | null;
+  amount: number; status: 'PENDING' | 'PAID' | 'CANCELLED'; orderId: string | null;
+  createdAt: string; paidAt: string | null; consumed: boolean;
+}
+
+export function revenue() {
+  return api.get<RevenueItem[]>('/admin/revenue');
+}

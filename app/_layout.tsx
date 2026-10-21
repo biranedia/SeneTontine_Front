@@ -38,6 +38,19 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+// Pages de l'espace admin : /<clé>/<page>. Elles prennent toute la largeur (barre latérale).
+const ADMIN_PAGES = /^\/[^/]+\/(overview|users|user-detail|tontines|revenue|incidents|broadcast|audit-logs)\/?$/;
+
+function Frame({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const wide = ADMIN_PAGES.test(pathname || '');
+  return (
+    <View style={s.desktopBg}>
+      <View style={[s.desktopFrame, wide && { maxWidth: undefined }]}>{children}</View>
+    </View>
+  );
+}
+
 export default function RootLayout() {
   return (
     <PaperProvider>
@@ -46,11 +59,9 @@ export default function RootLayout() {
         <StatusBar style="dark" />
         <AuthGate>
           {/* Sur ordinateur : l'appli reste au format téléphone, centrée, au lieu de s'étirer. */}
-          <View style={s.desktopBg}>
-            <View style={s.desktopFrame}>
-              <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg }, animation: 'slide_from_right' }} />
-            </View>
-          </View>
+          <Frame>
+            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg }, animation: 'slide_from_right' }} />
+          </Frame>
         </AuthGate>
       </AuthProvider>
       </LanguageProvider>

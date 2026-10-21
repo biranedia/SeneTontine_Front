@@ -8,6 +8,7 @@ import { setBackofficeKey } from '@/src/api/client';
 import * as adminApi from '@/src/api/admin';
 import { useAuth } from '@/src/context/AuthContext';
 import { Loading } from '@/src/components/ui';
+import { AdminShell } from '@/src/components/admin/AdminUI';
 import { colors } from '@/src/theme';
 
 export default function BackofficeLayout() {
@@ -42,5 +43,9 @@ export default function BackofficeLayout() {
       </View>
     );
   }
-  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }} />;
+  return (
+    <AdminShell>
+      <Stack screenOptions={{ headerShown: false, animation: 'none', contentStyle: { backgroundColor: colors.bg } }} />
+    </AdminShell>
+  );
 }
