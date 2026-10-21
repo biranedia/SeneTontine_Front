@@ -1,4 +1,4 @@
-// app/admin/users.tsx — Gestion des utilisateurs (admin uniquement)
+// app/[bo]/users.tsx — Gestion des utilisateurs (admin uniquement)
 // Recherche + liste des comptes, avec possibilite de bloquer/debloquer un compte ou de
 // changer son role, d'ouvrir la fiche complete d'un utilisateur (historique tontines/paiements/
 // signalements), et d'exporter la liste en CSV. Toute action passe par l'API (jamais de
@@ -10,7 +10,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, TextIn
 import { useRouter, useFocusEffect } from 'expo-router';
 import { colors, radius, shadow } from '@/src/theme';
 import * as adminApi from '@/src/api/admin';
-import { ApiError } from '@/src/api/client';
+import { ApiError, backofficeKey as bo } from '@/src/api/client';
 import { useAuth } from '@/src/context/AuthContext';
 
 
@@ -164,7 +164,7 @@ export default function AdminUsersScreen() {
                 key={u.id}
                 style={[s.card, !u.active && s.cardBlocked]}
                 activeOpacity={0.85}
-                onPress={() => router.push({ pathname: '/admin/user-detail', params: { id: String(u.id) } })}
+                onPress={() => router.push({ pathname: `/${bo()}/user-detail` as any, params: { id: String(u.id) } })}
               >
                 <View style={s.cardTop}>
                   <View style={{ flex: 1 }}>

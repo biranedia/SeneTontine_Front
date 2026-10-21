@@ -1,4 +1,4 @@
-// app/admin/broadcast.tsx — Diffusion d'une annonce a tous les utilisateurs (admin uniquement)
+// app/[bo]/broadcast.tsx — Diffusion d'une annonce a tous les utilisateurs (admin uniquement)
 // Pas de vrai push notification (infrastructure absente) : l'annonce la plus recente s'affiche
 // en banniere sur le tableau de bord de chaque utilisateur au prochain chargement (voir
 // dashboard.tsx). Suffisant pour des annonces informatives (maintenance, nouveaute...).
@@ -7,7 +7,7 @@ import { View, Text, ScrollView, TextInput, TouchableOpacity, StyleSheet, Status
 import { useRouter, useFocusEffect } from 'expo-router';
 import { colors, radius, shadow } from '@/src/theme';
 import * as announcementsApi from '@/src/api/announcements';
-import { ApiError } from '@/src/api/client';
+import { ApiError, backofficeKey as bo } from '@/src/api/client';
 
 export default function AdminBroadcastScreen() {
   const router = useRouter();

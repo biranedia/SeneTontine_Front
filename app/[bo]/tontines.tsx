@@ -1,4 +1,4 @@
-// app/admin/tontines.tsx — Supervision de toutes les tontines de la plateforme (admin uniquement)
+// app/[bo]/tontines.tsx — Supervision de toutes les tontines de la plateforme (admin uniquement)
 // Permet de reperer rapidement une tontine anormale (montant suspect, blocage de recrutement...),
 // d'en ouvrir le detail normal (TontineService.getDetail laisse deja passer un admin sur
 // n'importe quelle tontine, meme s'il n'en est pas membre), de moderer son chat, de forcer son
@@ -8,7 +8,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, Activi
 import { useRouter, useFocusEffect } from 'expo-router';
 import { colors, radius, shadow } from '@/src/theme';
 import * as adminApi from '@/src/api/admin';
-import { ApiError } from '@/src/api/client';
+import { ApiError, backofficeKey as bo } from '@/src/api/client';
 
 const STATUS_LABELS: Record<adminApi.AdminTontineInfo['status'], string> = {
   ACTIVE: 'ACTIVE',

@@ -1,4 +1,4 @@
-// app/admin/audit-logs.tsx — journal des actions sensibles (admin plateforme uniquement)
+// app/[bo]/audit-logs.tsx — journal des actions sensibles (admin plateforme uniquement)
 // Le filtrage par role est fait cote back (AuditLogController) : cet ecran affiche simplement
 // ce que l'API renvoie ; un non-admin qui arriverait ici recevrait une erreur 403.
 import React, { useCallback, useState } from 'react';
@@ -6,7 +6,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, Activi
 import { useRouter, useFocusEffect } from 'expo-router';
 import { colors, radius } from '@/src/theme';
 import * as auditLogsApi from '@/src/api/auditLogs';
-import { ApiError } from '@/src/api/client';
+import { ApiError, backofficeKey as bo } from '@/src/api/client';
 
 const ACTION_LABEL: Record<string, { label: string; icon: string; color: string }> = {
   WITHDRAWAL_APPROVED: { label: 'Retrait approuvé', icon: '✅', color: colors.sageLight },

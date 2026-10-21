@@ -59,7 +59,6 @@ export default function ProfileScreen() {
   };
 
   const name = profile?.fullName ?? user?.fullName ?? '';
-  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <Screen refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }}>
@@ -107,20 +106,6 @@ export default function ProfileScreen() {
           [{ text: 'Annuler', style: 'cancel' }, { text: 'Confirmer', onPress: () => logoutOtherDevices().then(() => Alert.alert('C’est fait')).catch(() => Alert.alert('Échec')) }],
         )} />
       </Card>
-
-      {isAdmin && (
-        <>
-          <SectionTitle title="Administration" />
-          <Card style={{ paddingVertical: 2 }}>
-            <ListRow icon="speedometer-outline" label="Vue d’ensemble" onPress={() => router.push('/admin/overview')} />
-            <ListRow icon="people-outline" label="Utilisateurs" onPress={() => router.push('/admin/users')} />
-            <ListRow icon="albums-outline" label="Toutes les tontines" onPress={() => router.push('/admin/tontines')} />
-            <ListRow icon="warning-outline" label="Signalements" onPress={() => router.push('/admin/incidents')} />
-            <ListRow icon="megaphone-outline" label="Diffuser une annonce" onPress={() => router.push('/admin/broadcast')} />
-            <ListRow icon="reader-outline" label="Journal d’audit" last onPress={() => router.push('/admin/audit-logs')} />
-          </Card>
-        </>
-      )}
 
       <SectionTitle title="Informations" />
       <Card style={{ paddingVertical: 2 }}>

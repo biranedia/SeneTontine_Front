@@ -112,3 +112,20 @@ export async function downloadCsv(kind: 'users' | 'tontines') {
   }
   return csv;
 }
+
+// ---- Tableau de bord analytique ----
+export interface Kpi { value: number; previous: number }
+export interface DayPoint { day: string; value: number }
+export interface Analytics {
+  days: number;
+  revenue: Kpi; signups: Kpi; tontinesCreated: Kpi; cotisationsVolume: Kpi;
+  totalUsers: number; pendingDeclarations: number; openIncidents: number;
+  tontinesByStatus: Record<string, number>;
+  revenueSeries: DayPoint[]; signupSeries: DayPoint[];
+  tontineSeries: DayPoint[]; cotisationSeries: DayPoint[];
+  recentRevenue: { id: number; userName: string; purpose: 'CREATE' | 'RENEW'; amount: number; paidAt: string }[];
+}
+
+export function analytics(days: 7 | 30 | 90) {
+  return api.get<Analytics>(`/admin/analytics?days=${days}`);
+}

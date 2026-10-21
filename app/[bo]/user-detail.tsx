@@ -1,4 +1,4 @@
-// app/admin/user-detail.tsx — Fiche complete d'un utilisateur (admin uniquement)
+// app/[bo]/user-detail.tsx — Fiche complete d'un utilisateur (admin uniquement)
 // Ouverte depuis admin/users.tsx : reunit en un seul ecran tout ce dont un admin a besoin pour
 // instruire un litige sur un compte precis (ses tontines, son historique de paiements, le
 // nombre de signalements qu'il a lui-meme soumis), plutot que de naviguer entre plusieurs
@@ -8,7 +8,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, Activi
 import { useRouter, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { colors, radius, shadow } from '@/src/theme';
 import * as adminApi from '@/src/api/admin';
-import { ApiError } from '@/src/api/client';
+import { ApiError, backofficeKey as bo } from '@/src/api/client';
 
 
 export default function AdminUserDetailScreen() {

@@ -3,3 +3,11 @@
 /epargne/nouveau   /epargne/nouveau.html   200
 /epargne/:id       /epargne/[id].html      200
 /tontine/:id       /tontine/[id].html      200
+# Espace admin caché : /<adresse-secrète>/<page> (la clé est vérifiée par le serveur)
+/:bo/overview      /[bo]/overview.html     200
+/:bo/users         /[bo]/users.html        200
+/:bo/user-detail   /[bo]/user-detail.html  200
+/:bo/tontines      /[bo]/tontines.html     200
+/:bo/incidents     /[bo]/incidents.html    200
+/:bo/broadcast     /[bo]/broadcast.html    200
+/:bo/audit-logs    /[bo]/audit-logs.html   200

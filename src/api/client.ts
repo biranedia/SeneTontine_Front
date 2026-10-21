@@ -37,6 +37,15 @@ export const API_BASE_URL = Platform.OS === 'web' ? API_BASE_URL_WEB : API_BASE_
 
 let authToken: string | null = null;
 
+// Clé de l'espace admin caché = le 1er segment de son adresse secrète (/<clé>/overview).
+// Envoyée en en-tête X-Backoffice sur /admin/** ; sans elle le serveur répond 404.
+let boKey = '';
+export function setBackofficeKey(k: string) { boKey = k; }
+export function backofficeKey() { return boKey; }
+function boHeaders(path: string): Record<string, string> {
+  return boKey && path.startsWith('/admin') ? { 'X-Backoffice': boKey } : {};
+}
+
 export function setAuthToken(token: string | null) {
   authToken = token;
 }
@@ -53,6 +62,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string> | undefined),
+    ...boHeaders(path),
   };
   if (authToken) {
     headers.Authorization = `Bearer ${authToken}`;
@@ -84,7 +94,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 // Variante texte brut (pas de JSON.parse) : utilisee pour les exports CSV admin, dont la
 // reponse est directement le contenu du fichier plutot qu'un objet JSON.
 export async function getRawText(path: string): Promise<string> {
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = { ...boHeaders(path) };
   if (authToken) {
     headers.Authorization = `Bearer ${authToken}`;
   }

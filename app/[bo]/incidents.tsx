@@ -1,4 +1,4 @@
-// app/admin/incidents.tsx — File des signalements d'incident (admin uniquement)
+// app/[bo]/incidents.tsx — File des signalements d'incident (admin uniquement)
 // Un membre signale (voir report-incident.tsx), un admin l'examine ici et le fait avancer :
 // Prendre en charge -> Résoudre / Rejeter, avec une note optionnelle visible ensuite par le
 // membre dans "Mes signalements". Chaque changement de statut est trace dans le journal
@@ -8,7 +8,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, TextIn
 import { useRouter, useFocusEffect } from 'expo-router';
 import { colors, radius, shadow } from '@/src/theme';
 import * as incidentsApi from '@/src/api/incidents';
-import { ApiError } from '@/src/api/client';
+import { ApiError, backofficeKey as bo } from '@/src/api/client';
 
 const CATEGORY_LABELS: Record<incidentsApi.IncidentCategory, string> = {
   FRAUD: '🚨 Fraude suspectée',
