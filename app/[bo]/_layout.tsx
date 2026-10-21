@@ -26,7 +26,10 @@ export default function BackofficeLayout() {
   }, []);
 
   useEffect(() => {
-    const key = String(bo ?? '');
+    // Clé lue dans l'adresse réelle : sur la page générée à l'avance, le paramètre vaut « [bo] ».
+    const fromUrl = Platform.OS === 'web' && typeof window !== 'undefined'
+      ? decodeURIComponent(window.location.pathname.split('/').filter(Boolean)[0] ?? '') : '';
+    const key = fromUrl && fromUrl !== '[bo]' ? fromUrl : String(bo ?? '');
     // On ne se fie pas au rôle gardé en mémoire sur le téléphone (il peut dater d'avant la
     // promotion en admin) : c'est le serveur qui tranche.
     if (!user || !/^[A-Za-z0-9_-]{4,64}$/.test(key)) { setState('nope'); return; }
