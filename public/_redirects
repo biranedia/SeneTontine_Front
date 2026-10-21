@@ -1,0 +1,5 @@
+# Cloudflare Pages : routes dynamiques de l'app (export statique Expo Router).
+# La 1re règle qui correspond s'applique : les pages fixes passent avant les génériques.
+/epargne/nouveau   /epargne/nouveau.html   200
+/epargne/:id       /epargne/[id].html      200
+/tontine/:id       /tontine/[id].html      200

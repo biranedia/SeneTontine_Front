@@ -41,3 +41,7 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Archives et fichiers mis de cote localement
+_to_delete/
+*.tar.gz

@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SeneTontine – Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C96D;
+    --gold-pale: #FDF6E3;
+    --deep: #1A1208;
+    --ink: #2C1F0A;
+    --earth: #6B4C1E;
+    --sage: #3D6B4F;
+    --sage-light: #5A9E72;
+    --cream: #FAF5EB;
+    --white: #FFFFFF;
+    --gray: #A89880;
+    --light-gray: #F0EBE1;
+    --error: #C0392B;
+    --shadow: 0 8px 32px rgba(26,18,8,0.12);
+    --shadow-lg: 0 16px 48px rgba(26,18,8,0.18);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #1A1208;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  /* PHONE FRAME */
+  .phone {
+    width: 360px;
+    min-height: 720px;
+    background: var(--cream);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg), 0 0 0 6px #2C1F0A, 0 0 0 10px #C9A84C22;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  .screen-label {
+    position: absolute;
+    bottom: -36px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--gold);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* STATUS BAR */
+  .status-bar {
+    background: var(--deep);
+    padding: 12px 24px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .status-bar span { color: var(--gold-light); font-size: 11px; font-weight: 600; }
+
+  /* HEADER VARIANTS */
+  .header-auth {
+    background: var(--deep);
+    padding: 48px 28px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header-auth::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #C9A84C22 0%, transparent 70%);
+  }
+  .header-auth::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .logo-mark {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+    box-shadow: 0 8px 24px rgba(201,168,76,0.4);
+  }
+  .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--white);
+    letter-spacing: -0.5px;
+  }
+  .brand-name span { color: var(--gold); }
+  .brand-tagline { color: var(--gray); font-size: 12px; margin-top: 4px; letter-spacing: 1px; }
+
+  /* CONTENT */
+  .content { padding: 28px; flex: 1; }
+
+  /* FORM */
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 11px; font-weight: 600; color: var(--earth); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .field-wrap {
+    display: flex; align-items: center;
+    background: var(--white);
+    border: 1.5px solid #E8DEC8;
+    border-radius: 14px;
+    padding: 0 16px;
+    transition: border-color 0.2s;
+  }
+  .field-wrap:focus-within { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.12); }
+  .field-wrap .icon { color: var(--gray); margin-right: 10px; font-size: 16px; }
+  .field-wrap input {
+    border: none; outline: none; background: transparent;
+    padding: 14px 0; flex: 1;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; color: var(--ink);
+  }
+  .field-wrap input::placeholder { color: #C8B99A; }
+
+  .btn-primary {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    border: none; border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 600; color: var(--deep);
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(201,168,76,0.35);
+    letter-spacing: 0.3px;
+    margin-top: 8px;
+  }
+
+  .btn-secondary {
+    background: transparent; border: 1.5px solid var(--gold);
+    color: var(--earth); border-radius: 14px;
+    padding: 13px; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500; cursor: pointer; width: 100%;
+  }
+
+  .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #E8DEC8; }
+  .divider span { color: var(--gray); font-size: 12px; }
+
+  /* DASH HEADER */
+  .dash-header {
+    background: var(--deep);
+    padding: 20px 24px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .dash-header::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold)55, transparent);
+  }
+  .dash-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .user-greeting { display: flex; align-items: center; gap: 10px; }
+  .avatar {
+    width: 42px; height: 42px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; color: var(--deep);
+    border: 2px solid rgba(201,168,76,0.3);
+  }
+  .greeting-text small { color: var(--gray); font-size: 11px; display: block; }
+  .greeting-text strong { color: var(--white); font-size: 15px; }
+  .notif-btn {
+    width: 38px; height: 38px; border-radius: 12px;
+    background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.2);
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+    position: relative;
+  }
+  .notif-dot {
+    position: absolute; top: 6px; right: 6px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--gold); border: 1.5px solid var(--deep);
+  }
+
+  /* BALANCE CARD */
+  .balance-card {
+    background: linear-gradient(135deg, #2C1F0A 0%, #3D2B10 100%);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .balance-card::before {
+    content: '◈';
+    position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+    font-size: 80px; color: rgba(201,168,76,0.07); line-height: 1;
+  }
+  .balance-label { color: var(--gray); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .balance-amount { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: var(--gold-light); }
+  .balance-amount span { font-size: 16px; font-weight: 400; opacity: 0.7; margin-left: 4px; }
+  .balance-meta { display: flex; gap: 16px; margin-top: 12px; }
+  .balance-meta-item small { color: var(--gray); font-size: 10px; display: block; }
+  .balance-meta-item strong { color: var(--white); font-size: 13px; }
+
+  /* QUICK ACTIONS */
+  .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
+  .qa-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .qa-icon {
+    width: 52px; height: 52px; border-radius: 16px;
+    background: var(--white); border: 1.5px solid #E8DEC8;
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+    box-shadow: 0 2px 8px rgba(26,18,8,0.06);
+  }
+  .qa-label { font-size: 10px; color: var(--earth); font-weight: 500; text-align: center; }
+
+  /* SECTION TITLE */
+  .section-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .section-title h3 { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--ink); font-weight: 700; }
+  .section-title a { font-size: 12px; color: var(--gold); font-weight: 500; text-decoration: none; }
+
+  /* TONTINE CARD */
+  .tontine-card {
+    background: var(--white);
+    border-radius: 18px; padding: 16px;
+    margin-bottom: 12px;
+    border: 1.5px solid #EDE6D6;
+    position: relative; overflow: hidden;
+  }
+  .tontine-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; border-radius: 4px 0 0 4px;
+  }
+  .tontine-card.active::before { background: var(--sage); }
+  .tontine-card.pending::before { background: var(--gold); }
+  .tontine-card.closed::before { background: var(--gray); }
+
+  .tc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .tc-name { font-weight: 600; color: var(--ink); font-size: 14px; }
+  .tc-badge {
+    font-size: 10px; padding: 3px 10px; border-radius: 20px; font-weight: 600; letter-spacing: 0.5px;
+  }
+  .badge-active { background: #E8F5EC; color: var(--sage); }
+  .badge-pending { background: #FDF6E3; color: var(--earth); }
+
+  .tc-progress { height: 5px; background: #F0EBE1; border-radius: 99px; margin: 10px 0; overflow: hidden; }
+  .tc-progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--sage), var(--sage-light)); }
+
+  .tc-meta { display: flex; justify-content: space-between; }
+  .tc-meta-item small { color: var(--gray); font-size: 10px; display: block; }
+  .tc-meta-item strong { font-size: 12px; color: var(--ink); }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    background: var(--deep);
+    padding: 12px 20px 20px;
+    display: flex; justify-content: space-around; align-items: center;
+    border-top: 1px solid rgba(201,168,76,0.15);
+  }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+  .nav-icon { font-size: 20px; }
+  .nav-label { font-size: 9px; color: var(--gray); font-weight: 500; letter-spacing: 0.5px; }
+  .nav-item.active .nav-label { color: var(--gold); }
+  .nav-item.active .nav-icon { filter: drop-shadow(0 0 4px rgba(201,168,76,0.5)); }
+
+  /* TONTINE DETAIL */
+  .detail-header {
+    background: var(--deep);
+    padding: 20px 24px 28px;
+    position: relative;
+  }
+  .back-btn {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--gold); font-size: 13px; font-weight: 500;
+    margin-bottom: 16px; cursor: pointer;
+  }
+  .detail-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--white); }
+  .detail-subtitle { color: var(--gray); font-size: 12px; margin-top: 2px; }
+
+  /* STATS GRID */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; }
+  .stat-card {
+    background: var(--white); border-radius: 14px; padding: 14px;
+    border: 1.5px solid #EDE6D6;
+  }
+  .stat-card .icon { font-size: 20px; margin-bottom: 6px; }
+  .stat-card .value { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--ink); }
+  .stat-card .key { font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* MEMBERS LIST */
+  .member-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid #F0EBE1;
+  }
+  .member-row:last-child { border-bottom: none; }
+  .m-avatar {
+    width: 36px; height: 36px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: var(--white);
+  }
+  .m-info { flex: 1; }
+  .m-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .m-role { font-size: 10px; color: var(--gray); }
+  .m-status {
+    font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px;
+  }
+  .paid { background: #E8F5EC; color: var(--sage); }
+  .due { background: #FDF6E3; color: var(--earth); }
+  .late { background: #FDECEA; color: var(--error); }
+
+  /* PAYMENT SCREEN */
+  .pay-header {
+    background: var(--deep); padding: 20px 24px 32px; text-align: center;
+  }
+  .pay-amount-display {
+    font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 900;
+    color: var(--gold-light); margin: 12px 0 4px;
+  }
+  .pay-amount-display span { font-size: 20px; opacity: 0.7; }
+  .pay-tontine-name { color: var(--gray); font-size: 12px; }
+
+  .payment-methods { margin: 20px 0; }
+  .method-card {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--white); border: 1.5px solid #EDE6D6;
+    border-radius: 16px; padding: 16px; margin-bottom: 10px;
+    cursor: pointer; transition: all 0.2s;
+    position: relative;
+  }
+  .method-card.selected { border-color: var(--gold); background: var(--gold-pale); }
+  .method-logo {
+    width: 48px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; letter-spacing: -0.5px;
+  }
+  .wave-logo { background: #1D3E8A; color: white; }
+  .orange-logo { background: #FF6600; color: white; }
+  .free-logo { background: #E60000; color: white; }
+  .method-info { flex: 1; }
+  .method-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .method-num { font-size: 11px; color: var(--gray); }
+  .method-check {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid #E0D8C8; display: flex; align-items: center; justify-content: center;
+  }
+  .method-card.selected .method-check { background: var(--gold); border-color: var(--gold); color: white; font-size: 11px; }
+
+  /* CHAT */
+  .chat-header {
+    background: var(--deep); padding: 20px 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .chat-avatar {
+    width: 44px; height: 44px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--sage), var(--sage-light));
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .chat-title { color: var(--white); font-weight: 600; font-size: 15px; }
+  .chat-members { color: var(--gray); font-size: 11px; }
+  .online-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--sage-light); margin-right: 4px; }
+
+  .chat-body { flex: 1; padding: 16px; background: #F7F2E8; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+  .chat-date { text-align: center; color: var(--gray); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin: 4px 0; }
+
+  .msg { display: flex; gap: 8px; max-width: 85%; }
+  .msg.me { align-self: flex-end; flex-direction: row-reverse; }
+  .msg-avatar { width: 28px; height: 28px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; margin-top: auto; }
+  .msg-bubble {
+    background: var(--white); border-radius: 16px 16px 16px 4px;
+    padding: 10px 14px; box-shadow: 0 2px 8px rgba(26,18,8,0.06);
+  }
+  .msg.me .msg-bubble { background: var(--gold); border-radius: 16px 16px 4px 16px; }
+  .msg-text { font-size: 13px; color: var(--ink); line-height: 1.5; }
+  .msg.me .msg-text { color: var(--deep); }
+  .msg-time { font-size: 9px; color: var(--gray); margin-top: 3px; }
+  .msg.me .msg-time { color: rgba(44,31,10,0.6); }
+
+  .msg-system {
+    align-self: center; background: #EDE6D6; border-radius: 20px;
+    padding: 6px 14px; font-size: 11px; color: var(--earth); text-align: center;
+  }
+
+  .chat-input {
+    background: var(--white); border-top: 1px solid #E8DEC8;
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .chat-input input {
+    flex: 1; border: 1.5px solid #E8DEC8; border-radius: 24px;
+    padding: 10px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px;
+    outline: none; color: var(--ink); background: var(--cream);
+  }
+  .send-btn {
+    width: 40px; height: 40px; border-radius: 13px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border: none; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer;
+    box-shadow: 0 3px 10px rgba(201,168,76,0.35);
+  }
+
+  /* SCORE / PROFIL */
+  .profile-header {
+    background: var(--deep); padding: 28px 24px 24px; text-align: center;
+  }
+  .profile-avatar {
+    width: 80px; height: 80px; border-radius: 24px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    margin: 0 auto 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; font-weight: 700; color: var(--deep);
+    border: 3px solid rgba(201,168,76,0.4);
+    box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+  }
+  .profile-name { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--white); font-weight: 700; }
+  .profile-phone { color: var(--gray); font-size: 12px; margin-top: 2px; }
+
+  .trust-score-wrap { margin: 16px auto 0; max-width: 200px; }
+  .trust-score-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden; margin: 6px 0; }
+  .trust-score-fill { height: 100%; background: linear-gradient(90deg, var(--sage), var(--sage-light)); border-radius: 99px; }
+  .trust-label { display: flex; justify-content: space-between; }
+  .trust-label small { color: var(--gray); font-size: 10px; }
+  .trust-label strong { color: var(--sage-light); font-size: 12px; font-weight: 600; }
+
+  .profile-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: #EDE6D6; border-radius: 16px; overflow: hidden; margin: 16px 0; }
+  .ps-item { background: var(--white); padding: 14px 8px; text-align: center; }
+  .ps-value { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--ink); }
+  .ps-key { font-size: 10px; color: var(--gray); }
+
+  .menu-list { background: var(--white); border-radius: 16px; overflow: hidden; border: 1.5px solid #EDE6D6; }
+  .menu-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 15px 16px; border-bottom: 1px solid #F0EBE1; cursor: pointer;
+  }
+  .menu-item:last-child { border-bottom: none; }
+  .menu-item-icon { width: 36px; height: 36px; border-radius: 11px; background: var(--light-gray); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .menu-item-text { flex: 1; font-size: 13px; font-weight: 500; color: var(--ink); }
+  .menu-arrow { color: #C8B99A; font-size: 16px; }
+
+  /* PAGE TITLE */
+  h2.page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px; color: var(--white); font-weight: 700;
+    padding: 24px 24px 0;
+  }
+
+  /* NOTIF SCREEN */
+  .notif-item {
+    display: flex; gap: 12px; padding: 14px;
+    background: var(--white); border-radius: 14px;
+    border: 1.5px solid #EDE6D6; margin-bottom: 10px;
+  }
+  .notif-icon-wrap { width: 40px; height: 40px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .notif-pay { background: #E8F5EC; }
+  .notif-warn { background: #FDF6E3; }
+  .notif-msg { background: #E8EEF8; }
+  .notif-title { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .notif-desc { font-size: 11px; color: var(--gray); margin-top: 2px; line-height: 1.4; }
+  .notif-time { font-size: 10px; color: #C8B99A; margin-top: 4px; }
+
+  /* PAGE LABEL */
+  .page-wrap { position: relative; margin-bottom: 60px; }
+
+  /* GLOBAL TITLE BANNER */
+  .global-title {
+    text-align: center;
+    color: var(--gold-light);
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+  .global-sub { text-align: center; color: #6B5030; font-size: 14px; margin-bottom: 48px; letter-spacing: 1px; }
+
+  /* SCROLL CONTAINER */
+  .dash-scroll { flex: 1; overflow-y: auto; padding: 20px 20px 0; }
+  .dash-scroll::-webkit-scrollbar { width: 0; }
+
+  /* CREATE TONTINE FORM */
+  .create-header {
+    background: var(--deep); padding: 20px 24px 24px;
+  }
+  .page-back { display: flex; align-items: center; gap: 6px; color: var(--gold); font-size: 13px; font-weight: 500; cursor: pointer; margin-bottom: 12px; }
+  .step-indicator { display: flex; gap: 6px; margin-top: 16px; }
+  .step-dot { height: 4px; flex: 1; border-radius: 99px; background: rgba(255,255,255,0.1); }
+  .step-dot.done { background: var(--gold); }
+  .step-dot.active { background: var(--gold-light); }
+
+  .toggle-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .toggle-opt {
+    padding: 12px; border-radius: 12px; border: 1.5px solid #E8DEC8;
+    text-align: center; cursor: pointer; font-size: 12px; font-weight: 500; color: var(--earth);
+    background: var(--white);
+  }
+  .toggle-opt.sel { border-color: var(--gold); background: var(--gold-pale); color: var(--ink); }
+  .toggle-opt .opt-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+<!-- GLOBAL TITLE -->
+<div style="width:100%;text-align:center;padding:40px 0 0;flex-basis:100%;">
+  <div class="global-title">SeneTontine</div>
+  <div class="global-sub">PROTOTYPE COMPLET – INTERFACES UTILISATEUR</div>
+</div>
+
+<!-- 1. CONNEXION -->
+<div class="page-wrap">
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>●●●◉ 87%</span></div>
+    <div class="header-auth">
+      <div class="logo-mark">🤝</div>
+      <div class="brand-name">Sène<span>Tontine</span></div>
+      <div class="brand-tagline">ÉPARGNEZ. ENSEMBLE. EN CONFIANCE.</div>
+    </div>
+    <div class="content">
+      <p style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:20px;">Bon retour 👋</p>
+      <div class="field">
+        <label>Numéro de téléphone</label>
+        <div class="field-wrap">
+          <span class="icon">🇸🇳</span>
+          <input type="text" placeholder="+221 77 000 00 00">
+        </div>
+      </div>
+      <div class="field">
+        <label>Mot de passe</label>
+        <div class="field-wrap">
+          <span class="icon">🔒</span>
+          <input type="password" placeholder="••••••••">
+          <span style="color:var(--gray);font-size:14px;cursor:pointer;">👁</span>
+        </div>
+      </div>
+      <p style="text-align:right;font-size:12px;color:var(--gold);margin:-4px 0 16px;cursor:pointer;font-weight:500;">Mot de passe oublié ?</p>
+      <button class="btn-primary">Se connecter →</button>
+      <div style="text-align:center;margin-top:12px;">
+        <small style="color:var(--gray);font-size:12px;">OU CONNEXION RAPIDE PAR</small>
+      </div>
+      <div style="display:flex;justify-content:center;gap:12px;margin-top:10px;">
+        <div style="width:44px;height:44px;border-radius:13px;border:1.5px solid #E8DEC8;background:white;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;">📱</div>
+        <div style="width:44px;height:44px;border-radius:13px;border:1.5px solid #E8DEC8;background:white;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;">🔑</div>
+      </div>
+      <div class="divider"><span>Nouveau sur SeneTontine ?</span></div>
+      <button class="btn-secondary">Créer un compte</button>
+    </div>
+  </div>
+  <div class="screen-label">01 · CONNEXION</div>
+</div>
+
+<!-- 2. DASHBOARD -->
+<div class="page-wrap">
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>●●●◉ 87%</span></div>
+    <div class="dash-header">
+      <div class="dash-top">
+        <div class="user-greeting">
+          <div class="avatar">FM</div>
+          <div class="greeting-text">
+            <small>Bonjour,</small>
+            <strong>Fatou Mbaye</strong>
+          </div>
+        </div>
+        <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+      </div>
+      <div class="balance-card">
+        <div class="balance-label">Solde total épargné</div>
+        <div class="balance-amount">485 000 <span>FCFA</span></div>
+        <div class="balance-meta">
+          <div class="balance-meta-item"><small>Ce mois</small><strong>+25 000</strong></div>
+          <div class="balance-meta-item"><small>Tontines actives</small><strong>3</strong></div>
+          <div class="balance-meta-item"><small>Score</small><strong>⭐ 4.8</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-scroll">
+      <div class="quick-actions">
+        <div class="qa-item"><div class="qa-icon">➕</div><div class="qa-label">Créer</div></div>
+        <div class="qa-item"><div class="qa-icon">👥</div><div class="qa-label">Rejoindre</div></div>
+        <div class="qa-item"><div class="qa-icon">💸</div><div class="qa-label">Payer</div></div>
+        <div class="qa-item"><div class="qa-icon">📊</div><div class="qa-label">Rapport</div></div>
+      </div>
+      <div class="section-title">
+        <h3>Mes tontines</h3>
+        <a href="#">Voir tout →</a>
+      </div>
+      <div class="tontine-card active">
+        <div class="tc-top">
+          <div><div class="tc-name">🌾 Famille Thiès</div><div style="font-size:11px;color:var(--gray);margin-top:2px;">8 membres · Tour 4/12</div></div>
+          <span class="tc-badge badge-active">ACTIF</span>
+        </div>
+        <div class="tc-progress"><div class="tc-progress-fill" style="width:33%"></div></div>
+        <div class="tc-meta">
+          <div class="tc-meta-item"><small>Cotisation</small><strong>25 000 FCFA</strong></div>
+          <div class="tc-meta-item"><small>Prochain tour</small><strong>15 mars</strong></div>
+          <div class="tc-meta-item"><small>Bénéficiaire</small><strong>Aminata S.</strong></div>
+        </div>
+      </div>
+      <div class="tontine-card active">
+        <div class="tc-top">
+          <div><div class="tc-name">💼 Collègues Dakar</div><div style="font-size:11px;color:var(--gray);margin-top:2px;">12 membres · Tour 2/12</div></div>
+          <span class="tc-badge badge-active">ACTIF</span>
+        </div>
+        <div class="tc-progress"><div class="tc-progress-fill" style="width:17%"></div></div>
+        <div class="tc-meta">
+          <div class="tc-meta-item"><small>Cotisation</small><strong>50 000 FCFA</strong></div>
+          <div class="tc-meta-item"><small>Prochain tour</small><strong>20 mars</strong></div>
+          <div class="tc-meta-item"><small>Bénéficiaire</small><strong>Vous 🎯</small></strong></div>
+        </div>
+      </div>
+      <div class="tontine-card pending">
+        <div class="tc-top">
+          <div><div class="tc-name">🏘 Quartier HLM</div><div style="font-size:11px;color:var(--gray);margin-top:2px;">5/10 membres recrutés</div></div>
+          <span class="tc-badge badge-pending">EN ATTENTE</span>
+        </div>
+        <div class="tc-progress"><div class="tc-progress-fill" style="width:50%;background:linear-gradient(90deg,var(--gold),var(--gold-light))"></div></div>
+        <div class="tc-meta">
+          <div class="tc-meta-item"><small>Cotisation</small><strong>15 000 FCFA</strong></div>
+          <div class="tc-meta-item"><small>Démarrage</small><strong>1er avril</strong></div>
+          <div class="tc-meta-item"><small>Durée</small><strong>10 mois</strong></div>
+        </div>
+      </div>
+      <div style="height:16px;"></div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item active"><div class="nav-icon">🏠</div><div class="nav-label">Accueil</div></div>
+      <div class="nav-item"><div class="nav-icon">🤝</div><div class="nav-label">Tontines</div></div>
+      <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+      <div class="nav-item"><div class="nav-icon">📈</div><div class="nav-label">Stats</div></div>
+      <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profil</div></div>
+    </div>
+  </div>
+  <div class="screen-label">02 · TABLEAU DE BORD</div>
+</div>
+
+<!-- 3. DETAIL TONTINE -->
+<div class="page-wrap">
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>●●●◉ 87%</span></div>
+    <div class="detail-header">
+      <div class="back-btn">← Retour</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div class="detail-title">💼 Collègues Dakar</div>
+          <div class="detail-subtitle">Créé par Moussa Diallo · Jan 2025</div>
+        </div>
+        <div style="background:rgba(201,168,76,0.15);border-radius:10px;padding:6px 10px;font-size:11px;color:var(--gold);font-weight:600;">TOUR 2/12</div>
+      </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:16px 20px 0;">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="icon">💰</div><div class="value">50K</div><div class="key">Cotisation/mois</div></div>
+        <div class="stat-card"><div class="icon">🏆</div><div class="value">600K</div><div class="key">Pot total</div></div>
+        <div class="stat-card"><div class="icon">👥</div><div class="value">12</div><div class="key">Membres</div></div>
+        <div class="stat-card"><div class="icon">📅</div><div class="value">20 mars</div><div class="key">Prochain tour</div></div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,var(--sage),#2D5240);border-radius:16px;padding:16px;margin:4px 0 16px;color:white;">
+        <div style="font-size:11px;opacity:0.7;letter-spacing:1px;">🎯 PROCHAIN BÉNÉFICIAIRE</div>
+        <div style="font-size:18px;font-weight:700;font-family:'Playfair Display',serif;margin:6px 0 2px;">Fatou Mbaye (Vous !)</div>
+        <div style="font-size:12px;opacity:0.7;">Dans 12 jours · Montant attendu : 600 000 FCFA</div>
+      </div>
+
+      <div class="section-title"><h3>Membres & Statuts</h3><a href="#">Gérer →</a></div>
+      <div style="background:white;border-radius:16px;padding:8px 14px;border:1.5px solid #EDE6D6;">
+        <div class="member-row">
+          <div class="m-avatar" style="background:linear-gradient(135deg,#3D6B4F,#5A9E72);">FM</div>
+          <div class="m-info"><div class="m-name">Fatou Mbaye (vous)</div><div class="m-role">Membre · Tour 2</div></div>
+          <span class="m-status paid">✓ Payé</span>
+        </div>
+        <div class="member-row">
+          <div class="m-avatar" style="background:linear-gradient(135deg,#C9A84C,#E8C96D);">MD</div>
+          <div class="m-info"><div class="m-name">Moussa Diallo</div><div class="m-role">Créateur · Tour 1</div></div>
+          <span class="m-status paid">✓ Payé</span>
+        </div>
+        <div class="member-row">
+          <div class="m-avatar" style="background:linear-gradient(135deg,#6B4C1E,#8B6330);">AS</div>
+          <div class="m-info"><div class="m-name">Aminata Sow</div><div class="m-role">Membre · Tour 5</div></div>
+          <span class="m-status due">⏳ En attente</span>
+        </div>
+        <div class="member-row">
+          <div class="m-avatar" style="background:linear-gradient(135deg,#C0392B,#E74C3C);">KD</div>
+          <div class="m-info"><div class="m-name">Kofi Diop</div><div class="m-role">Membre · Tour 8</div></div>
+          <span class="m-status late">⚠ Retard</span>
+        </div>
+      </div>
+      <div style="height:16px;"></div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Accueil</div></div>
+      <div class="nav-item active"><div class="nav-icon">🤝</div><div class="nav-label">Tontines</div></div>
+      <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+      <div class="nav-item"><div class="nav-icon">📈</div><div class="nav-label">Stats</div></div>
+      <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profil</div></div>
+    </div>
+  </div>
+  <div class="screen-label">03 · DÉTAIL TONTINE</div>
+</div>
+
+<!-- 4. PAIEMENT -->
+<div class="page-wrap">
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>●●●◉ 87%</span></div>
+    <div class="pay-header">
+      <div class="back-btn" style="justify-content:left;">← Annuler</div>
+      <div style="font-size:11px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;">Paiement cotisation</div>
+      <div class="pay-amount-display">50 000 <span>FCFA</span></div>
+      <div class="pay-tontine-name">💼 Collègues Dakar · Mars 2025</div>
+      <div style="margin-top:12px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:8px 14px;display:inline-block;">
+        <span style="color:var(--gold);font-size:11px;font-weight:600;">⏰ Échéance dans 3 jours</span>
+      </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:20px;">
+      <p style="font-size:11px;font-weight:600;color:var(--earth);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Choisir le moyen de paiement</p>
+      <div class="payment-methods">
+        <div class="method-card selected">
+          <div class="method-logo wave-logo">WAVE</div>
+          <div class="method-info">
+            <div class="method-name">Wave</div>
+            <div class="method-num">+221 77 ••• ••12</div>
+          </div>
+          <div class="method-check">✓</div>
+        </div>
+        <div class="method-card">
+          <div class="method-logo orange-logo">OM</div>
+          <div class="method-info">
+            <div class="method-name">Orange Money</div>
+            <div class="method-num">+221 76 ••• ••45</div>
+          </div>
+          <div class="method-check"></div>
+        </div>
+        <div class="method-card">
+          <div class="method-logo free-logo">FREE</div>
+          <div class="method-info">
+            <div class="method-name">Free Money</div>
+            <div class="method-num">Ajouter un compte</div>
+          </div>
+          <div class="method-check">+</div>
+        </div>
+      </div>
+      <div style="background:var(--white);border-radius:14px;padding:14px;border:1.5px solid #EDE6D6;margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:12px;color:var(--gray);">Montant cotisation</span>
+          <span style="font-size:13px;font-weight:600;color:var(--ink);">50 000 FCFA</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:12px;color:var(--gray);">Frais de service</span>
+          <span style="font-size:13px;font-weight:600;color:var(--sage);">Gratuit</span>
+        </div>
+        <div style="height:1px;background:#F0EBE1;margin:8px 0;"></div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="font-size:13px;font-weight:600;color:var(--ink);">Total</span>
+          <span style="font-size:15px;font-weight:700;color:var(--ink);">50 000 FCFA</span>
+        </div>
+      </div>
+      <button class="btn-primary">🔒 Confirmer le paiement Wave</button>
+      <p style="text-align:center;font-size:10px;color:var(--gray);margin-top:10px;">Un code OTP sera envoyé au +221 77 ••• ••12</p>
+    </div>
+  </div>
+  <div class="screen-label">04 · PAIEMENT</div>
+</div>
+
+<!-- 5. CHAT -->
+<div class="page-wrap">
+  <div class="phone" style="min-height:720px;">
+    <div class="status-bar"><span>9:41</span><span>●●●◉ 87%</span></div>
+    <div class="chat-header">
+      <div class="back-btn" style="margin-bottom:0;color:var(--gold);font-size:20px;">←</div>
+      <div class="chat-avatar">🤝</div>
+      <div style="flex:1;">
+        <div class="chat-title">💼 Collègues Dakar</div>
+        <div class="chat-members"><span class="online-dot"></span>12 membres · 5 en ligne</div>
+      </div>
+      <div style="font-size:20px;cursor:pointer;">ℹ️</div>
+    </div>
+    <div class="chat-body">
+      <div class="chat-date">Aujourd'hui, 9 mars 2025</div>
+      <div class="msg-system">💰 Aminata Sow a payé sa cotisation de 50 000 FCFA</div>
+      <div class="msg">
+        <div class="m-avatar msg-avatar" style="background:linear-gradient(135deg,#C9A84C,#E8C96D);">MD</div>
+        <div>
+          <div class="msg-bubble">
+            <div class="msg-text">Alerte : Kofi a encore du retard ☹️ quelqu'un peut le contacter ?</div>
+            <div class="msg-time">09:15 · Moussa D.</div>
+          </div>
+        </div>
+      </div>
+      <div class="msg">
+        <div class="m-avatar msg-avatar" style="background:linear-gradient(135deg,#3D6B4F,#5A9E72);">AS</div>
+        <div>
+          <div class="msg-bubble">
+            <div class="msg-text">Je l'ai appelé ce matin, il dit qu'il paye demain 🙏</div>
+            <div class="msg-time">09:22 · Aminata S.</div>
+          </div>
+        </div>
+      </div>
+      <div class="msg-system">📅 Rappel : Tour de Fatou Mbaye dans 12 jours – 600 000 FCFA</div>
+      <div class="msg me">
+        <div class="m-avatar msg-avatar" style="background:linear-gradient(135deg,#1A1208,#2C1F0A);">FM</div>
+        <div>
+          <div class="msg-bubble">
+            <div class="msg-text">Merci à tous pour votre sérieux 🙌 on fait partie de la meilleure tontine de Dakar ! 😄</div>
+            <div class="msg-time">09:35 · Vous</div>
+          </div>
+        </div>
+      </div>
+      <div class="msg">
+        <div class="m-avatar msg-avatar" style="background:linear-gradient(135deg,#6B4C1E,#8B6330);">BS</div>
+        <div>
+          <div class="msg-bubble">
+            <div class="msg-text">😂😂 Vrai dire ! On est organisés ici 💪</div>
+            <div class="msg-time">09:37 · Baye S.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-input">
+      <div style="font-size:20px;cursor:pointer;">📎</div>
+      <input type="text" placeholder="Écrire un message...">
+      <button class="send-btn">➤</button>
+    </div>
+  </div>
+  <div class="screen-label">05 · CHAT GROUPE</div>
+</div>
+
+<!-- 6. CRÉER TONTINE -->
+<div class="page-wrap">
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>●●●◉ 87%</span></div>
+    <div class="create-header">
+      <div class="page-back">← Retour</div>
+      <div style="color:var(--white);font-family:'Playfair Display',serif;font-size:20px;font-weight:700;">Créer une tontine</div>
+      <div style="color:var(--gray);font-size:11px;margin-top:2px;">Étape 1 sur 3 · Informations générales</div>
+      <div class="step-indicator">
+        <div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+      </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:20px;">
+      <div class="field">
+        <label>Nom de la tontine</label>
+        <div class="field-wrap">
+          <span class="icon">✍️</span>
+          <input type="text" placeholder="Ex: Famille Thiès 2025">
+        </div>
+      </div>
+      <div class="field">
+        <label>Montant de la cotisation</label>
+        <div class="field-wrap">
+          <span class="icon">💰</span>
+          <input type="number" placeholder="Ex: 25 000">
+          <span style="font-size:12px;color:var(--gray);font-weight:600;white-space:nowrap;">FCFA/mois</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Nombre de membres</label>
+        <div class="field-wrap">
+          <span class="icon">👥</span>
+          <input type="number" placeholder="Ex: 8 à 20 membres">
+        </div>
+      </div>
+      <div class="field">
+        <label>Type de rotation</label>
+        <div class="toggle-group">
+          <div class="toggle-opt sel">
+            <span class="opt-icon">🎲</span>Tirage aléatoire
+          </div>
+          <div class="toggle-opt">
+            <span class="opt-icon">🗳️</span>Vote du groupe
+          </div>
+          <div class="toggle-opt">
+            <span class="opt-icon">📅</span>Ordre fixe
+          </div>
+          <div class="toggle-opt">
+            <span class="opt-icon">⭐</span>Par score
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Pénalité de retard</label>
+        <div class="field-wrap">
+          <span class="icon">⚠️</span>
+          <input type="number" placeholder="Ex: 2 000">
+          <span style="font-size:12px;color:var(--gray);font-weight:600;white-space:nowrap;">FCFA/jour</span>
+        </div>
+      </div>
+      <button class="btn-primary" style="margin-top:8px;">Suivant → Inviter des membres</button>
+    </div>
+  </div>
+  <div class="screen-label">06 · CRÉER TONTINE</div>
+</div>
+
+<!-- 7. PROFIL / SCORE -->
+<div class="page-wrap">
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>●●●◉ 87%</span></div>
+    <div class="profile-header">
+      <div class="profile-avatar">FM</div>
+      <div class="profile-name">Fatou Mbaye</div>
+      <div class="profile-phone">+221 77 123 45 67 · ✅ Vérifié KYC</div>
+      <div class="trust-score-wrap">
+        <div class="trust-label">
+          <small>Score de confiance</small>
+          <strong>4.8 / 5.0 ⭐</strong>
+        </div>
+        <div class="trust-score-bar"><div class="trust-score-fill" style="width:96%"></div></div>
+        <div style="text-align:center;color:#5A9E72;font-size:11px;font-weight:600;">MEMBRE EXEMPLAIRE</div>
+      </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:16px 20px 0;">
+      <div class="profile-stats">
+        <div class="ps-item"><div class="ps-value">3</div><div class="ps-key">Tontines</div></div>
+        <div class="ps-item"><div class="ps-value">485K</div><div class="ps-key">Épargné</div></div>
+        <div class="ps-item"><div class="ps-value">24</div><div class="ps-key">Paiements</div></div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#1A1208,#2C1F0A);border-radius:16px;padding:16px;margin-bottom:16px;border:1px solid rgba(201,168,76,0.2);">
+        <div style="font-size:11px;color:var(--gray);letter-spacing:1px;margin-bottom:10px;">HISTORIQUE RÉCENT</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <div style="width:32px;height:32px;border-radius:10px;background:#1A3320;display:flex;align-items:center;justify-content:center;font-size:14px;">✓</div>
+            <div><div style="font-size:12px;color:white;font-weight:500;">Cotisation Famille Thiès</div><div style="font-size:10px;color:var(--gray);">5 mars 2025</div></div>
+          </div>
+          <div style="color:var(--sage-light);font-weight:600;font-size:13px;">-25 000</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <div style="width:32px;height:32px;border-radius:10px;background:#2D1A00;display:flex;align-items:center;justify-content:center;font-size:14px;">🏆</div>
+            <div><div style="font-size:12px;color:white;font-weight:500;">Reçu pot · Quartier HLM</div><div style="font-size:10px;color:var(--gray);">1 fév 2025</div></div>
+          </div>
+          <div style="color:var(--gold-light);font-weight:600;font-size:13px;">+150 000</div>
+        </div>
+      </div>
+
+      <div class="menu-list">
+        <div class="menu-item"><div class="menu-item-icon">📄</div><div class="menu-item-text">Contrats signés</div><div class="menu-arrow">›</div></div>
+        <div class="menu-item"><div class="menu-item-icon">📊</div><div class="menu-item-text">Exporter mes relevés</div><div class="menu-arrow">›</div></div>
+        <div class="menu-item"><div class="menu-item-icon">🔔</div><div class="menu-item-text">Notifications</div><div class="menu-arrow">›</div></div>
+        <div class="menu-item"><div class="menu-item-icon">🔒</div><div class="menu-item-text">Sécurité & confidentialité</div><div class="menu-arrow">›</div></div>
+        <div class="menu-item"><div class="menu-item-icon">🌐</div><div class="menu-item-text">Langue : Français</div><div class="menu-arrow">›</div></div>
+      </div>
+      <div style="height:12px;"></div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Accueil</div></div>
+      <div class="nav-item"><div class="nav-icon">🤝</div><div class="nav-label">Tontines</div></div>
+      <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+      <div class="nav-item"><div class="nav-icon">📈</div><div class="nav-label">Stats</div></div>
+      <div class="nav-item active"><div class="nav-icon">👤</div><div class="nav-label">Profil</div></div>
+    </div>
+  </div>
+  <div class="screen-label">07 · PROFIL & SCORE</div>
+</div>
+
+<!-- 8. NOTIFICATIONS -->
+<div class="page-wrap">
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>●●●◉ 87%</span></div>
+    <div class="dash-header">
+      <div class="back-btn" style="color:var(--gold);font-size:13px;cursor:pointer;font-weight:500;margin-bottom:0;">← Retour</div>
+      <h2 class="page-title" style="padding:12px 0 0;color:white;">Notifications</h2>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:16px 20px 0;">
+      <p style="font-size:11px;font-weight:600;color:var(--earth);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Aujourd'hui</p>
+      <div class="notif-item">
+        <div class="notif-icon-wrap notif-warn">⏰</div>
+        <div>
+          <div class="notif-title">Rappel de cotisation</div>
+          <div class="notif-desc">Votre cotisation de 50 000 FCFA pour "Collègues Dakar" est due dans 3 jours (20 mars)</div>
+          <div class="notif-time">Il y a 2 heures</div>
+        </div>
+      </div>
+      <div class="notif-item">
+        <div class="notif-icon-wrap notif-pay">🏆</div>
+        <div>
+          <div class="notif-title">Votre tour approche !</div>
+          <div class="notif-desc">Dans 12 jours, vous recevrez 600 000 FCFA de la tontine "Collègues Dakar" 🎉</div>
+          <div class="notif-time">Il y a 5 heures</div>
+        </div>
+      </div>
+      <p style="font-size:11px;font-weight:600;color:var(--earth);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;margin-top:16px;">Cette semaine</p>
+      <div class="notif-item">
+        <div class="notif-icon-wrap notif-msg">💬</div>
+        <div>
+          <div class="notif-title">Nouveau message</div>
+          <div class="notif-desc">Moussa Diallo : "Alerte : Kofi a encore du retard..." dans Collègues Dakar</div>
+          <div class="notif-time">Hier, 09:15</div>
+        </div>
+      </div>
+      <div class="notif-item">
+        <div class="notif-icon-wrap notif-pay">💰</div>
+        <div>
+          <div class="notif-title">Paiement reçu</div>
+          <div class="notif-desc">Aminata Sow a payé 50 000 FCFA dans "Collègues Dakar". Taux de collecte : 91%</div>
+          <div class="notif-time">Hier, 14:30</div>
+        </div>
+      </div>
+      <div class="notif-item">
+        <div class="notif-icon-wrap" style="background:#FDE8E8;">⚠️</div>
+        <div>
+          <div class="notif-title">Pénalité appliquée</div>
+          <div class="notif-desc">Kofi Diop a reçu une pénalité de 2 000 FCFA pour retard de paiement (jour 1)</div>
+          <div class="notif-time">Avant-hier, 08:00</div>
+        </div>
+      </div>
+      <div class="notif-item">
+        <div class="notif-icon-wrap notif-pay">👥</div>
+        <div>
+          <div class="notif-title">Nouveau membre</div>
+          <div class="notif-desc">Ibrahima Ndiaye a rejoint votre tontine "Quartier HLM". Plus que 5 places !</div>
+          <div class="notif-time">12 mars, 16:45</div>
+        </div>
+      </div>
+      <div style="height:16px;"></div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Accueil</div></div>
+      <div class="nav-item"><div class="nav-icon">🤝</div><div class="nav-label">Tontines</div></div>
+      <div class="nav-item"><div class="nav-icon">💬</div><div class="nav-label">Chat</div></div>
+      <div class="nav-item active"><div class="nav-icon">🔔</div><div class="nav-label">Alertes</div></div>
+      <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profil</div></div>
+    </div>
+  </div>
+  <div class="screen-label">08 · NOTIFICATIONS</div>
+</div>
+
+<!-- FOOTER -->
+<div style="width:100%;text-align:center;padding:60px 0 40px;color:#3D2B10;font-size:12px;letter-spacing:2px;flex-basis:100%;">
+  SENETONTINE · PROTOTYPE UI/UX · 8 ÉCRANS · 2025
+</div>
+
+</body>
+</html>
