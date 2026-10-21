@@ -1,13 +1,13 @@
 # Cloudflare Pages : routes dynamiques de l'app (export statique Expo Router).
 # La 1re règle qui correspond s'applique : les pages fixes passent avant les génériques.
-/epargne/nouveau   /epargne/nouveau.html   200
-/epargne/:id       /epargne/[id].html      200
-/tontine/:id       /tontine/[id].html      200
+/epargne/nouveau   /epargne/nouveau   200
+/epargne/:id       /epargne/[id]      200
+/tontine/:id       /tontine/[id]      200
 # Espace admin caché : /<adresse-secrète>/<page> (la clé est vérifiée par le serveur)
-/:bo/overview      /[bo]/overview.html     200
-/:bo/users         /[bo]/users.html        200
-/:bo/user-detail   /[bo]/user-detail.html  200
-/:bo/tontines      /[bo]/tontines.html     200
-/:bo/incidents     /[bo]/incidents.html    200
-/:bo/broadcast     /[bo]/broadcast.html    200
-/:bo/audit-logs    /[bo]/audit-logs.html   200
+/:bo/overview      /[bo]/overview     200
+/:bo/users         /[bo]/users        200
+/:bo/user-detail   /[bo]/user-detail  200
+/:bo/tontines      /[bo]/tontines     200
+/:bo/incidents     /[bo]/incidents    200
+/:bo/broadcast     /[bo]/broadcast    200
+/:bo/audit-logs    /[bo]/audit-logs   200
