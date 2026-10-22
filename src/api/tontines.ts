@@ -67,6 +67,7 @@ export interface TontineDetail {
   isPublic: boolean;
   wavePhone: string | null;
   orangeMoneyPhone: string | null;
+  startDate: string | null;
 }
 
 export interface TontineSettings {
@@ -79,6 +80,7 @@ export interface TontineSettings {
   cycleDurationDays?: number;
   wavePhone?: string | null;
   orangeMoneyPhone?: string | null;
+  startDate?: string | null; // AAAA-MM-JJ
 }
 
 export interface LeaveTontineResponse {

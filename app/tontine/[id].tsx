@@ -1,10 +1,11 @@
 // app/tontine/[id].tsx — Détail d'une tontine : payer, confirmer, verser le pot, membres.
 import React, { useCallback, useState } from 'react';
-import { Alert, Linking, Modal, Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Linking, Modal, Pressable, Share, StyleSheet, Text, TextInput, View, Platform } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { whatsappUrl } from '@/src/config';
+import { shareTontineCard } from '@/src/lib/shareCard';
 import { useAuth } from '@/src/context/AuthContext';
 import * as tontinesApi from '@/src/api/tontines';
 import * as paymentsApi from '@/src/api/payments';
@@ -95,6 +96,16 @@ export default function TontineDetailScreen() {
   const shareInvite = () => sendWhatsApp(
     `Rejoins ma tontine « ${t.name} » sur SèneTontine 🤝\nCotisation : ${t.cotisation}\nCode d'invitation : ${t.inviteCode}\nInscris-toi ici : https://senetontine.com/join?code=${t.inviteCode}`,
   );
+
+  // Image « statut WhatsApp » : plus visuel pour inviter ses proches.
+  const shareStatus = async () => {
+    const r = await shareTontineCard({
+      emoji: t.emoji, name: t.name, cotisation: `${t.cotisation} / tour`,
+      frequence: `un tour tous les ${t.cycleDurationDays} jours`, membres: `${t.membersRequired} membres`,
+      code: t.inviteCode, createur: t.createdBy,
+    }, `https://senetontine.com/join?code=${t.inviteCode}`);
+    if (r === 'downloaded') Alert.alert('Image enregistrée', 'Ouvre WhatsApp › Statut et choisis l’image dans ta galerie / tes téléchargements.');
+  };
 
   const remind = (m: tontinesApi.MemberInfo) => sendWhatsApp(
     `Salut ${m.name.split(' ')[0]} 👋 Petit rappel pour la tontine « ${t.name} » : ta cotisation de ${fcfa(m.amountDue)} est attendue avant le ${t.prochainTour}. Tu peux la déclarer sur https://senetontine.com. Merci !`,
@@ -290,6 +301,10 @@ export default function TontineDetailScreen() {
                   <Ionicons name="copy-outline" size={18} color={colors.muted} />
                 </Pressable>
                 <Button label="Partager l’invitation" icon="logo-whatsapp" onPress={shareInvite} />
+                {Platform.OS === 'web' && (
+                  <Button label="Créer une image pour mon statut" icon="image-outline" variant="secondary" style={{ marginTop: 10 }}
+                    onPress={shareStatus} />
+                )}
                 <View style={{ height: 16 }} />
                 <Field label="Ou ajouter par numéro" icon="call-outline" placeholder="77 123 45 67" keyboardType="phone-pad"
                   value={invitePhone} onChangeText={setInvitePhone} />
@@ -348,6 +363,9 @@ export default function TontineDetailScreen() {
       <SectionTitle title="Informations" />
       <Card>
         <InfoLine label="Durée d’un tour" value={`${t.cycleDurationDays} jours`} />
+        {t.startDate && t.status === 'PENDING' && (
+          <InfoLine label="Premier tour prévu" value={t.startDate.split('-').reverse().join('/')} />
+        )}
         <InfoLine label="Pénalité de retard" value={t.penaltyPerDay > 0 ? `${fcfa(t.penaltyPerDay)} / jour` : 'Aucune'} />
         <InfoLine label="Visibilité" value={t.isPublic ? 'Publique' : 'Privée (sur invitation)'} last />
       </Card>

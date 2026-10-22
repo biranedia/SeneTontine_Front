@@ -116,7 +116,6 @@ export default function HomeScreen() {
       <View style={s.actions}>
         <QuickAction icon="add" label="Créer" onPress={() => router.push('/create-tontine')} />
         <QuickAction icon="key-outline" label="Rejoindre" onPress={() => router.push('/join')} />
-        <QuickAction icon="compass-outline" label="Découvrir" onPress={() => router.push('/discover')} />
       </View>
 
       <SectionTitle title="À faire" />

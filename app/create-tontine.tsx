@@ -9,10 +9,13 @@ import { colors, fcfa, radius } from '@/src/theme';
 import { Button, Card, Field, Loading, PageHeader, Screen, Segmented, SectionTitle, tap } from '@/src/components/ui';
 
 const CYCLES = [
-  { value: '7', label: 'Chaque semaine' },
-  { value: '14', label: 'Toutes les 2 sem.' },
-  { value: '30', label: 'Chaque mois' },
+  { value: '7', label: '7 jours' },
+  { value: '10', label: '10 jours' },
+  { value: '14', label: '14 jours' },
+  { value: '30', label: '1 mois' },
+  { value: 'custom', label: 'Autre…' },
 ];
+const PRESETS = ['7', '10', '14', '30'];
 
 const ROTATIONS: { id: tontinesApi.RotationType; label: string; hint: string }[] = [
   { id: 'FIXED_ORDER', label: 'Ordre d’arrivée', hint: 'Le premier inscrit reçoit en premier' },
@@ -34,6 +37,8 @@ export default function CreateTontineScreen() {
   const [wave, setWave] = useState('');
   const [om, setOm] = useState('');
   const [isPublic, setIsPublic] = useState(false);
+  const [startMode, setStartMode] = useState<'auto' | 'date'>('auto');
+  const [startText, setStartText] = useState(''); // JJ/MM/AAAA
   const [loading, setLoading] = useState(!!editingId);
   const [saving, setSaving] = useState(false);
   const savingRef = useRef(false);
@@ -67,6 +72,7 @@ export default function CreateTontineScreen() {
       setWave(t.wavePhone ?? '');
       setOm(t.orangeMoneyPhone ?? '');
       setIsPublic(t.isPublic);
+      if (t.startDate) { const [y, m, d] = t.startDate.split('-'); setStartMode('date'); setStartText(`${d}/${m}/${y}`); }
     }).catch((e) => {
       Alert.alert('Chargement impossible', e instanceof ApiError ? e.message : 'Réessaie plus tard.', [{ text: 'OK', onPress: () => router.back() }]);
     }).finally(() => setLoading(false));
@@ -81,6 +87,18 @@ export default function CreateTontineScreen() {
     if (!name.trim()) return Alert.alert('Nom manquant', 'Donne un nom à ta tontine.');
     if (!Number.isFinite(amountN) || amountN <= 0) return Alert.alert('Montant invalide', 'Indique le montant de la cotisation.');
     if (!Number.isInteger(membersN) || membersN < 2 || membersN > 50) return Alert.alert('Nombre de membres', 'Entre 2 et 50 membres.');
+    const cycleN = Number(cycle);
+    if (!Number.isInteger(cycleN) || cycleN < 1 || cycleN > 365) return Alert.alert('Fréquence des tours', 'Indique un nombre de jours entre 1 et 365.');
+    let startIso: string | null = null;
+    if (startMode === 'date') {
+      const m = startText.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      const dt = m ? new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1])) : null;
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      if (!dt || dt.getDate() !== Number(m![1]) || dt < today) {
+        return Alert.alert('Date du premier tour', 'Écris une date à venir au format JJ/MM/AAAA, par exemple 05/11/2026.');
+      }
+      startIso = `${m![3]}-${m![2].padStart(2, '0')}-${m![1].padStart(2, '0')}`;
+    }
     if (!wave.trim() && !om.trim()) return Alert.alert('Numéro de réception', 'Indique au moins un numéro Wave ou Orange Money pour recevoir les cotisations.');
 
     savingRef.current = true;
@@ -92,9 +110,10 @@ export default function CreateTontineScreen() {
       cycleDurationDays: Number(cycle),
       rotationType: rotation,
       penaltyPerDay: penalty ? Number(penalty) : 0,
-      makePublic: isPublic,
+      makePublic: false,
       wavePhone: wave.trim() || null,
       orangeMoneyPhone: om.trim() || null,
+      startDate: startIso,
     };
     try {
       if (editingId) {
@@ -153,7 +172,28 @@ export default function CreateTontineScreen() {
         hint="C’est aussi le nombre de tours : chaque membre reçoit le pot une fois." />
 
       <Text style={s.label}>Fréquence des tours</Text>
-      <Segmented value={cycle} onChange={setCycle} options={CYCLES} />
+      <Segmented value={PRESETS.includes(cycle) ? cycle : 'custom'}
+        onChange={(v) => setCycle(v === 'custom' ? (PRESETS.includes(cycle) ? '' : cycle) : v)} options={CYCLES} />
+      {!PRESETS.includes(cycle) && (
+        <View style={{ marginTop: 12 }}>
+          <Field label="Un membre reçoit le pot tous les…" icon="calendar-outline" suffix="jours" placeholder="Ex : 5, 10, 21"
+            keyboardType="numeric" value={cycle} onChangeText={(v) => setCycle(v.replace(/[^0-9]/g, '').slice(0, 3))}
+            hint="Entre 1 et 365 jours. Exemple : tous les 10 jours, jusqu’à ce que tout le monde ait reçu." />
+        </View>
+      )}
+
+      <Text style={[s.label, { marginTop: 18 }]}>Premier tour</Text>
+      <Segmented value={startMode} onChange={setStartMode} options={[
+        { value: 'auto', label: 'Dès qu’elle est complète' },
+        { value: 'date', label: 'À une date précise' },
+      ]} />
+      {startMode === 'date' && (
+        <View style={{ marginTop: 12 }}>
+          <Field label="Date du premier tour" icon="calendar-outline" placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation"
+            value={startText} onChangeText={(v) => setStartText(v.replace(/[^0-9/]/g, '').slice(0, 10))}
+            hint="Première cotisation à envoyer et premier versement à cette date (si tout le monde a rejoint). Ensuite, un tour tous les N jours." />
+        </View>
+      )}
 
       {pot > 0 && (
         <View style={s.potPreview}>
@@ -187,13 +227,6 @@ export default function CreateTontineScreen() {
       <SectionTitle title="Options" />
       <Field label="Pénalité de retard (facultatif)" icon="alert-circle-outline" suffix="FCFA / jour" placeholder="0" keyboardType="numeric"
         value={penalty} onChangeText={setPenalty} hint="Indicative : l’app calcule le montant, c’est toi qui la réclames." />
-      <Card style={s.switchRow}>
-        <View style={{ flex: 1 }}>
-          <Text style={s.optionTitle}>Tontine publique</Text>
-          <Text style={s.optionHint}>Visible dans « Découvrir ». Sinon, accessible uniquement par code d’invitation.</Text>
-        </View>
-        <Switch value={isPublic} onValueChange={setIsPublic} trackColor={{ true: colors.gold, false: colors.border }} thumbColor={colors.white} />
-      </Card>
 
       <Button label={editingId ? 'Enregistrer' : 'Créer la tontine'} onPress={submit} loading={saving} style={{ marginTop: 24 }} />
     </Screen>

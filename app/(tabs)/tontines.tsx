@@ -65,9 +65,9 @@ export default function TontinesScreen() {
           {!loading && visible.length === 0 ? (
             <EmptyState icon="file-tray-outline"
               title={items.length === 0 ? 'Aucune tontine pour le moment' : 'Rien dans cette catégorie'}
-              text={items.length === 0 ? 'Crée la tienne ou découvre des tontines publiques ouvertes.' : undefined}
-              action={items.length === 0 ? 'Découvrir des tontines' : undefined}
-              onAction={() => router.push('/discover')} />
+              text={items.length === 0 ? 'Crée la tienne, ou rejoins celle d’un proche avec son code d’invitation.' : undefined}
+              action={items.length === 0 ? 'Rejoindre avec un code' : undefined}
+              onAction={() => router.push('/join')} />
           ) : visible.map((t, i) => <TontineCard key={t.id} t={t} index={i} />)}
         </>
       ) : (
