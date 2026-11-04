@@ -1,10 +1,12 @@
-// Service worker SèneTontine : rend l'app installable et rapide à rouvrir.
-// Les données (API) ne sont JAMAIS mises en cache : elles restent toujours à jour et privées.
-const CACHE = 'senetontine-v2';
+// Service worker SèneTontine : rend l'app installable et utilisable hors connexion.
+// Réseau d'abord pour TOUT : chaque appareil reçoit la dernière version dès qu'elle est en ligne
+// (avant, un ancien fichier en cache pouvait rester affiché après une mise à jour).
+// Les données (API) ne sont JAMAIS mises en cache.
+const CACHE = 'senetontine-v3';
 const SHELL = ['/', '/accueil', '/manifest.json', '/icons/icon-192.png'];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).catch(() => {}).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (event) => {
@@ -19,20 +21,15 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
-
-  // Pages : réseau d'abord, version en cache si hors connexion.
-  if (req.mode === 'navigate') {
-    event.respondWith(fetch(req).catch(() => caches.match(req).then((r) => r || caches.match('/accueil'))));
-    return;
-  }
-  // Fichiers statiques (JS, images) : cache puis mise à jour en arrière-plan.
   event.respondWith(
-    caches.match(req).then((cached) => {
-      const network = fetch(req).then((res) => {
-        if (res.ok) caches.open(CACHE).then((c) => c.put(req, res.clone()));
+    fetch(req)
+      .then((res) => {
+        if (res.ok && res.type === 'basic') {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy));
+        }
         return res;
-      }).catch(() => cached);
-      return cached || network;
-    }),
+      })
+      .catch(() => caches.match(req).then((r) => r || (req.mode === 'navigate' ? caches.match('/accueil') : undefined))),
   );
 });
