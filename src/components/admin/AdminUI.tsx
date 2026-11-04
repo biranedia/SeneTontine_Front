@@ -17,6 +17,7 @@ export const NAV: { page: string; label: string; icon: Icon }[] = [
   { page: 'incidents', label: 'Signalements', icon: 'flag-outline' },
   { page: 'broadcast', label: 'Annonces', icon: 'megaphone-outline' },
   { page: 'audit-logs', label: 'Journal d’audit', icon: 'document-text-outline' },
+  { page: 'health', label: 'Santé serveur', icon: 'pulse-outline' },
 ];
 
 export const adminHref = (page: string, params?: Record<string, string>) =>
@@ -252,7 +253,7 @@ const s = StyleSheet.create({
   mobileBar: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#1C1A17', paddingHorizontal: 16, paddingVertical: 14 },
   mobileTitle: { color: '#FFFFFF', fontWeight: '800', fontSize: 16 },
   overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, flexDirection: 'row' },
-  page: { padding: 24, paddingBottom: 60, maxWidth: 1200, width: '100%', alignSelf: 'center' },
+  page: { padding: 24, paddingBottom: 60, maxWidth: 1600, width: '100%', alignSelf: 'center' },
   back: { flexDirection: 'row', alignItems: 'center', gap: 2, marginBottom: 10 },
   backText: { color: colors.muted, fontWeight: '600' },
   pageHead: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 12, marginBottom: 20 },

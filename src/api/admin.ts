@@ -157,3 +157,32 @@ export interface RevenueItem {
 export function revenue() {
   return api.get<RevenueItem[]>('/admin/revenue');
 }
+
+// ---- Supervision serveur ----
+export interface ServerHealth {
+  serverStartedAt: string;
+  uptimeSeconds: number;
+  dbUp: boolean;
+  dbPoolActive: number;
+  dbPoolIdle: number;
+  dbPoolMax: number;
+  dbPoolPending: number;
+  lastMigration: string;
+  heapUsedMb: number;
+  heapMaxMb: number;
+  maintenanceEnabled: boolean;
+  maintenanceMessage: string;
+  deployHookConfigured: boolean;
+}
+
+export function serverHealth() {
+  return api.get<ServerHealth>('/admin/server-health');
+}
+
+export function setMaintenance(enabled: boolean, message?: string) {
+  return api.post<{ enabled: boolean; message: string }>('/admin/maintenance', { enabled, message });
+}
+
+export function redeploy() {
+  return api.post<{ triggered: boolean }>('/admin/redeploy', {});
+}
