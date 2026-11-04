@@ -21,7 +21,7 @@
       "package": "sn.senetontine.app"
     },
     "web": {
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/images/favicon.png",
       "name": "SèneTontine",
       "shortName": "SèneTontine",
