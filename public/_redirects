@@ -12,3 +12,5 @@
 /:bo/incidents     /[bo]/incidents    200
 /:bo/broadcast     /[bo]/broadcast    200
 /:bo/audit-logs    /[bo]/audit-logs   200
+# Catch-all SPA : toute autre URL charge le router React (évite les 404 sur accès direct)
+/*                 /index.html        200
