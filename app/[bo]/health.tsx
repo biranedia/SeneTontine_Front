@@ -62,8 +62,8 @@ export default function AdminHealthScreen() {
     Alert.alert(
       `${value ? 'Activer' : 'Désactiver'} la maintenance ?`,
       value
-        ? 'Les membres ne pourront plus accéder à l'application. L'espace admin reste accessible.'
-        : 'L'application sera de nouveau accessible à tous les membres.',
+        ? "Les membres ne pourront plus accéder à l'application. L'espace admin reste accessible."
+        : "L'application sera de nouveau accessible à tous les membres.",
       [
         { text: 'Annuler', style: 'cancel' },
         {
