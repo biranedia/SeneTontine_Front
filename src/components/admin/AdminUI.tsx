@@ -40,7 +40,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           <Text style={s.brandSub}>Administration</Text>
         </View>
       </View>
-      <View style={{ gap: 4, flex: 1 }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 4 }}>
         {NAV.map((n) => {
           const on = current === n.page;
           return (
