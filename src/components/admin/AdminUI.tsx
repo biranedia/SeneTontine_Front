@@ -100,9 +100,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 }
 
 // Page : titre, sous-titre, actions à droite, contenu défilant.
-export function AdminPage({ title, subtitle, actions, children, onRefresh, back }: {
+export function AdminPage({ title, subtitle, actions, children, onRefresh, refreshing, back }: {
   title: string; subtitle?: string; actions?: React.ReactNode; children: React.ReactNode;
-  onRefresh?: () => void; back?: () => void;
+  onRefresh?: () => void; refreshing?: boolean; back?: () => void;
 }) {
   return (
     <ScrollView contentContainerStyle={s.page} showsVerticalScrollIndicator={false}>
@@ -118,7 +118,7 @@ export function AdminPage({ title, subtitle, actions, children, onRefresh, back 
           {!!subtitle && <Text style={s.pageSub}>{subtitle}</Text>}
         </View>
         <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-          {onRefresh && <ABtn icon="refresh" label="Actualiser" onPress={onRefresh} />}
+          {onRefresh && <ABtn icon="refresh" label="Actualiser" onPress={onRefresh} busy={refreshing} />}
           {actions}
         </View>
       </View>

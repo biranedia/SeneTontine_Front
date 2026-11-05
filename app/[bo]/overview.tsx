@@ -161,7 +161,7 @@ export default function AdminOverviewScreen() {
   const sum = (pts: adminApi.DayPoint[]) => pts.reduce((a, b) => a + b.value, 0);
 
   return (
-    <AdminPage title="Tableau de bord" subtitle="Pilotage de SèneTontine" onRefresh={() => { setRefreshing(true); load(period); }}>
+    <AdminPage title="Tableau de bord" subtitle="Pilotage de SèneTontine" onRefresh={() => { setRefreshing(true); load(period); }} refreshing={refreshing}>
 
       <View style={{ marginBottom: 16 }}>
         <Segmented<Period>
