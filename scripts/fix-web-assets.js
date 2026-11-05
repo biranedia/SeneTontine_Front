@@ -28,3 +28,13 @@ let changed = 0;
   }
 })(dist);
 console.log(`fix-web-assets : dossier renommé, ${changed} fichier(s) corrigé(s)`);
+
+// SPA fallback : Cloudflare Pages sert 404.html pour les routes sans fichier correspondant.
+// En copiant index.html → 404.html, toutes les URL de l'app (admin, profil, etc.) fonctionnent
+// même après un refresh ou un accès direct, sans boucle de redirection.
+const indexPath = path.join(dist, 'index.html');
+const notFoundPath = path.join(dist, '404.html');
+if (fs.existsSync(indexPath)) {
+  fs.copyFileSync(indexPath, notFoundPath);
+  console.log('fix-web-assets : 404.html créé (SPA fallback Cloudflare)');
+}
