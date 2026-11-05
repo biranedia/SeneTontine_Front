@@ -51,7 +51,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             </Pressable>
           );
         })}
-      </View>
+      </ScrollView>
       <Pressable onPress={() => router.replace('/accueil')} style={({ hovered }: any) => [s.navItem, hovered && s.navHover]}>
         <Ionicons name="arrow-back-outline" size={19} color="#B8B0A2" />
         <Text style={s.navText}>Retour à l’appli</Text>
